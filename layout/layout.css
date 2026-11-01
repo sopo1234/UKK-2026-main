@@ -1,0 +1,192 @@
+/* ===============================================
+   LAYOUT BERSAMA - UKK 2026
+   Sumber tunggal gaya sidebar + konten utama.
+   Semua halaman admin/guru memakai file ini.
+   =============================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: #f5f7f9;
+}
+
+/* Sidebar */
+.app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 284px;
+    height: 100vh;
+    padding: 20px 14px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #343a40;
+    z-index: 1000;
+}
+
+.app-sidebar h4 {
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: bold;
+    margin: 0 0 24px;
+}
+
+.app-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.app-sidebar nav a {
+    display: block;
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.app-sidebar nav a:hover {
+    background: #495057;
+    color: #ffffff;
+}
+
+.app-sidebar nav a.active {
+    background: #0d6efd;
+    color: #ffffff;
+}
+
+.app-sidebar nav hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #777777;
+    margin: 15px 0;
+}
+
+.app-sidebar nav a.logout {
+    color: #ff5964;
+    margin-top: 5px;
+}
+
+.app-sidebar nav a.logout:hover {
+    background: #495057;
+}
+
+/* Konten utama */
+.app-main {
+    display: block;
+    width: auto;
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 284px;
+    padding: 30px;
+}
+
+.app-main h1,
+.app-main h2 {
+    margin-top: 0;
+}
+
+.app-main .table-responsive {
+    width: 100%;
+}
+
+/* Header halaman */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+/* Kartu pembungkus tabel */
+.table-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+}
+
+/* Kolom aksi pada tabel */
+.aksi {
+    display: flex;
+    gap: 5px;
+}
+
+/* Form umum (halaman tambah/edit) */
+.form-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 25px;
+    max-width: 720px;
+}
+
+.form-card label {
+    display: block;
+    font-size: 13px;
+    margin: 12px 0 5px;
+    color: #333;
+}
+
+.form-card input[type="text"],
+.form-card input[type="email"],
+.form-card input[type="password"],
+.form-card input[type="date"],
+.form-card input[type="number"],
+.form-card select,
+.form-card textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-card textarea {
+    resize: vertical;
+}
+
+.form-card button {
+    margin-top: 18px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Tampilan layar kecil */
+@media (max-width: 767.98px) {
+    .app-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+    }
+
+    .app-main {
+        width: 100%;
+        margin-left: 0;
+        padding: 18px 12px;
+    }
+
+    .table-card {
+        padding: 12px;
+    }
+
+    .form-card {
+        max-width: 100%;
+    }
+}

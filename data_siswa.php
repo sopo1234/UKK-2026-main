@@ -1,0 +1,201 @@
+<?php
+session_start();
+require_once __DIR__ . '/config/koneksi.php';
+
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if (($_SESSION['role'] ?? '') !== 'admin') {
+    exit("Akses ditolak!");
+}
+
+// Menu aktif
+$activeMenu = 'siswa';
+
+// Ambil data siswa
+$sql = "SELECT * FROM t_siswa ORDER BY id DESC";
+$hasil = mysqli_query($koneksi, $sql);
+
+if (!$hasil) {
+    die(
+        "Gagal mengambil data siswa: " .
+        htmlspecialchars(mysqli_error($koneksi), ENT_QUOTES, 'UTF-8')
+    );
+}
+
+// Mengamankan output
+function h($nilai) {
+    return htmlspecialchars(
+        (string)($nilai ?? '-'),
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Siswa</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+
+    <!-- DataTables -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
+
+    <link rel="stylesheet" href="layout/layout.css">
+
+    <style>
+        #tabelSiswa {
+            width: 100% !important;
+            white-space: nowrap;
+        }
+
+        #tabelSiswa th,
+        #tabelSiswa td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR BERSAMA -->
+<?php require_once __DIR__ . '/layout/sidebar.php'; ?>
+
+<!-- KONTEN UTAMA -->
+<main class="app-main">
+
+    <div class="page-header">
+        <h1>Data Siswa</h1>
+
+        <a href="dashboard.php">Kembali ke Dashboard</a>
+
+        <div class="mt-3">
+            <a href="kelola_siswa.php" class="btn btn-secondary">
+                Kelola Siswa
+            </a>
+
+            <a href="tambah_siswa.php" class="btn btn-primary">
+                Tambah Siswa
+            </a>
+        </div>
+    </div>
+
+    <div class="table-card shadow-sm">
+
+        <h5 class="mb-3">Daftar Data Siswa</h5>
+
+        <div class="table-responsive">
+            <table id="tabelSiswa"
+                   class="table table-striped table-bordered table-hover table-sm">
+
+                <thead class="thead-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>NIS</th>
+                        <th>NISN</th>
+                        <th>Nama</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Tanggal Lahir</th>
+                        <th>Alamat</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Updated At</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <?php
+                $no = 1;
+
+                while ($siswa = mysqli_fetch_assoc($hasil)) {
+                ?>
+                    <tr>
+                        <td><?= $no++; ?></td>
+
+                        <td><?= h($siswa['nis'] ?? '-'); ?></td>
+
+                        <td><?= h($siswa['nisn'] ?? '-'); ?></td>
+
+                        <td><?= h($siswa['nama'] ?? '-'); ?></td>
+
+                        <td>
+                            <?php
+                            $jk = $siswa['jenis_kelamin'] ?? '';
+
+                            if ($jk === 'L') {
+                                echo 'Laki-laki';
+                            } elseif ($jk === 'P') {
+                                echo 'Perempuan';
+                            } else {
+                                echo '-';
+                            }
+                            ?>
+                        </td>
+
+                        <td><?= h($siswa['tanggal_lahir'] ?? '-'); ?></td>
+
+                        <td><?= h($siswa['alamat'] ?? '-'); ?></td>
+
+                        <td>
+                            <?php if ((int)($siswa['status_aktif'] ?? 0) === 1) { ?>
+                                <span class="badge badge-success">Aktif</span>
+                            <?php } else { ?>
+                                <span class="badge badge-secondary">Tidak Aktif</span>
+                            <?php } ?>
+                        </td>
+
+                        <td><?= h($siswa['created_at'] ?? '-'); ?></td>
+
+                        <td><?= h($siswa['updated_at'] ?? '-'); ?></td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#tabelSiswa').DataTable({
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50, 100],
+        order: [],
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data siswa",
+            zeroRecords: "Data siswa tidak ditemukan",
+            emptyTable: "Belum ada data siswa",
+            paginate: {
+                first: "Pertama",
+                last: "Terakhir",
+                next: "Selanjutnya",
+                previous: "Sebelumnya"
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
