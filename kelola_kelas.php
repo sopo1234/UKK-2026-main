@@ -85,7 +85,7 @@ $q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY
     </div>
 
     <!-- FORM 1: TAMBAH KELAS BARU (dipindah dari tambah_kelas.php) -->
-    <div class="form-card shadow-sm mb-4">
+    <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Kelas Baru</h5>
 
         <form action="tambah_kelas.php" method="POST">
@@ -124,7 +124,7 @@ $q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY
     </div>
 
     <!-- FORM 2: TAMBAH PENEMPATAN SISWA KE KELAS -->
-    <div class="form-card shadow-sm mb-4">
+    <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tempatkan Siswa ke Kelas</h5>
 
         <form action="proses_tambah_kelas.php" method="POST">

@@ -48,7 +48,7 @@ if (!$hasil) {
     <!-- /page-header -->
 
     <!-- FORM TAMBAH TAHUN AJARAN (dipindah dari tambah_tahun_ajaran.php) -->
-    <div class="form-card shadow-sm mb-4">
+    <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Tahun Ajaran Baru</h5>
 
         <form action="proses_tambah_tahun_ajaran.php" method="POST">

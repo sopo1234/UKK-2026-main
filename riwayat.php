@@ -8,168 +8,91 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'guru') {
     exit;
 }
 
-// Array Menu Guru
-$menuGuru = [
-    'dashboard.php' => 'Dashboard',
-    'catatan_pelanggaran.php' => 'Catat Pelanggaran',
-    'tindakan.php' => 'Tindakan',
-    'riwayat.php' => 'Riwayat',
-    'rekap_poin.php' => 'Rekap Poin',
-    'about_me.php' => 'About Me'
-];
+// Riwayat seluruh catatan pelanggaran (semua guru)
+$riwayat = mysqli_query($koneksi, "
+    SELECT tanggal, nama_siswa, nama_kelas, nama_pelanggaran,
+           poin, nama_guru, status
+    FROM t_pelanggaran_siswa
+    ORDER BY tanggal DESC, id DESC
+");
 
-$halaman_aktif = basename($_SERVER['PHP_SELF']);
+if (!$riwayat) {
+    die("Gagal mengambil riwayat: " . mysqli_error($koneksi));
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Pelanggaran - UKK 2026</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f9;
-            display: flex;
-        }
-        /* Sidebar Styling */
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            height: 100vh;
-            color: white;
-            position: fixed;
-            padding-top: 20px;
-        }
-        .sidebar h3 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 18px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar ul li a {
-            display: block;
-            color: #c2c7d0;
-            padding: 12px 20px;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .sidebar ul li a:hover,
-        .sidebar ul li a.active {
-            background-color: #007bff;
-            color: white;
-        }
-        .sidebar ul li.logout {
-            margin-top: 40px;
-        }
-        .sidebar ul li.logout a {
-            color: #ff6b6b;
-        }
-        /* Content Styling */
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            width: calc(100% - 250px);
-        }
-        .header-box {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table th, table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        table th {
-            background-color: #007bff;
-            color: white;
-        }
-        table tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
+
+    <?php include 'layout/datatables_head.php'; ?>
 </head>
 <body>
 
-    <!-- Sidebar Navigasi -->
-    <div class="sidebar">
-        <h3>Panel Guru</h3>
-        <ul>
-            <?php foreach ($menuGuru as $file =>$nama_menu) : ?>
-                <?php $is_active = ($halaman_aktif ==$file) ? 'active' : ''; ?>
-                <li>
-                    <a href="<?php echo $file; ?>" class="<?php echo $is_active; ?>">
-                        <?php echo $nama_menu; ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-            
-            <li class="logout">
-                <a href="logout.php">Logout</a>
-            </li>
-        </ul>
+<!-- SIDEBAR BERSAMA -->
+<?php include 'layout/sidebar.php'; ?>
+
+<!-- KONTEN UTAMA -->
+<main class="app-main">
+
+    <div class="page-header">
+        <h1>Riwayat Pelanggaran Siswa</h1>
+        <a href="dashboard.php">Kembali ke Dashboard</a>
     </div>
 
-    <!-- Konten Utama Riwayat -->
-    <div class="main-content">
-        <div class="header-box">
-            <h2>Riwayat Pelanggaran Siswa</h2>
-            <hr>
-            <p>Berikut adalah daftar riwayat catatan pelanggaran yang telah dimasukkan ke dalam sistem:</p>
+    <div class="table-card shadow-sm">
 
-            <table>
-                <thead>
+        <h5 class="mb-3">Daftar Riwayat Pelanggaran</h5>
+
+        <div class="table-responsive">
+            <table id="tabelRiwayat"
+                   class="table table-striped table-bordered table-hover table-sm">
+
+                <thead class="thead-dark">
                     <tr>
                         <th>No</th>
                         <th>Tanggal</th>
                         <th>Nama Siswa</th>
+                        <th>Kelas</th>
                         <th>Jenis Pelanggaran</th>
                         <th>Poin</th>
                         <th>Guru Pencatat</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <?php
-                    // Contoh query untuk mengambil data riwayat pelanggaran
-                    // Sesuaikan nama tabel (`t_pelanggaran_siswa`, `t_siswa`, dll) jika sudah ada di database Anda
-                    $query = "SELECT * FROM t_users ORDER BY id DESC"; // Ubah query sesuai tabel relasi pelanggaran Anda nanti
-                    $result = mysqli_query($koneksi,$query);
-                    
-                    if ($result && mysqli_num_rows($result) > 0) {$no = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<tr>";
-                            echo "<td>" . $no++ . "</td>";
-                            echo "<td>-</td>";
-                            echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                            echo "<td>-</td>";
-                            echo "<td>-</td>";
-                            echo "<td>-</td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='6' style='text-align: center;'>Belum ada data riwayat pelanggaran.</td></tr>";
-                    }
-                    ?>
+                <?php if (mysqli_num_rows($riwayat) > 0): ?>
+                    <?php $no = 1; ?>
+                    <?php while ($row = mysqli_fetch_assoc($riwayat)): ?>
+                        <tr>
+                            <td><?= $no++; ?></td>
+                            <td><?= htmlspecialchars($row['tanggal'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_siswa'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_kelas'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_pelanggaran'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= (int)($row['poin'] ?? 0); ?></td>
+                            <td><?= htmlspecialchars($row['nama_guru'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <span class="badge badge-secondary">
+                                    <?= htmlspecialchars($row['status'] ?? '-', ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php endif; ?>
                 </tbody>
+
             </table>
         </div>
     </div>
+
+</main>
+
+<?php $dt_id = 'tabelRiwayat'; $dt_empty = 'Belum ada data riwayat pelanggaran'; include 'layout/datatables_bottom.php'; ?>
 
 </body>
 </html>

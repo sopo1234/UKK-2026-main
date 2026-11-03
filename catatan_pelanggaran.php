@@ -64,7 +64,7 @@ function aman_catatan($teks) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Catatan Pelanggaran</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<?php include 'layout/datatables_head.php'; ?>
 </head>
 
 <body>
@@ -85,15 +85,15 @@ function aman_catatan($teks) {
     <?php endif; ?>
 
     <!-- FORM TAMBAH -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="mb-3">Tambah Catatan Pelanggaran</h5>
+    <div class="form-card form-card-full shadow-sm mb-4">
+        <h5 class="mb-3">Tambah Catatan Pelanggaran</h5>
 
-            <form action="proses_tambah_pelanggaran.php" method="POST">
+        <form action="proses_tambah_pelanggaran.php" method="POST">
 
-                <div class="mb-3">
-                    <label class="form-label">Siswa dan Kelas</label>
-                    <select name="penempatan_id" class="form-select" required>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Siswa dan Kelas</label>
+                    <select name="penempatan_id" class="form-control" required>
                         <option value="">-- Pilih Siswa --</option>
 
                         <?php while ($s = mysqli_fetch_assoc($siswa)): ?>
@@ -105,9 +105,9 @@ function aman_catatan($teks) {
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Jenis Pelanggaran</label>
-                    <select name="pelanggaran_id" class="form-select" required>
+                <div class="form-group col-md-4">
+                    <label>Jenis Pelanggaran</label>
+                    <select name="pelanggaran_id" class="form-control" required>
                         <option value="">-- Pilih Pelanggaran --</option>
 
                         <?php while ($p = mysqli_fetch_assoc($pelanggaran)): ?>
@@ -119,38 +119,42 @@ function aman_catatan($teks) {
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tanggal</label>
+                <div class="form-group col-md-4">
+                    <label>Tanggal</label>
                     <input type="date" name="tanggal" class="form-control"
                            value="<?= date('Y-m-d') ?>" required>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Keterangan</label>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Keterangan</label>
                     <textarea name="keterangan" class="form-control"
                               rows="3" required></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tindakan</label>
+                <div class="form-group col-md-4">
+                    <label>Tindakan</label>
                     <textarea name="tindakan" class="form-control"
                               rows="3" required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Simpan Catatan
-                </button>
-            </form>
-        </div>
+                <div class="form-group col-md-4">
+                    <label>&nbsp;</label><br>
+                    <button type="submit" class="btn btn-primary">
+                        Simpan Catatan
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- DAFTAR CATATAN -->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="mb-3">Daftar Catatan Pelanggaran</h5>
+    <div class="table-card shadow-sm">
+        <h5 class="mb-3">Daftar Catatan Pelanggaran</h5>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
+                <table id="tabelCatatan" class="table table-bordered table-striped table-hover table-sm align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th>No.</th>
@@ -167,10 +171,9 @@ function aman_catatan($teks) {
                     </thead>
 
                     <tbody>
-                    <?php if (mysqli_num_rows($catatan) > 0): ?>
-                        <?php $no = 1; ?>
-                        <?php while ($d = mysqli_fetch_assoc($catatan)): ?>
-                            <tr>
+                    <?php $no = 1; ?>
+                    <?php while ($d = mysqli_fetch_assoc($catatan)): ?>
+                        <tr>
                                 <td><?= $no++ ?></td>
                                 <td><?= aman_catatan($d['tanggal']) ?></td>
                                 <td><?= aman_catatan($d['nama_siswa']) ?></td>
@@ -194,19 +197,13 @@ function aman_catatan($teks) {
                                 </td>
                             </tr>
                         <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="10" class="text-center">
-                                Belum ada catatan pelanggaran.
-                            </td>
-                        </tr>
-                    <?php endif; ?>
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 
 </main>
+
+<?php $dt_id = 'tabelCatatan'; $dt_empty = 'Belum ada catatan pelanggaran'; include 'layout/datatables_bottom.php'; ?>
 </body>
 </html>

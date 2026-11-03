@@ -75,7 +75,7 @@ $q_ta  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY na
             <hr>
 
             <!-- FORM TAMBAH WALI KELAS (dipindah dari tambah_walikelas.php) -->
-            <div class="form-card shadow-sm mb-4">
+            <div class="form-card form-card-full shadow-sm mb-4">
                 <h5 class="mb-3">Tambah Wali Kelas Baru</h5>
 
                 <form action="proses_tambah_walikelas.php" method="POST">

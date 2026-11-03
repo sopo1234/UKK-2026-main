@@ -8,166 +8,102 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'guru') {
     exit;
 }
 
-// Array Menu Guru
-$menuGuru = [
-    'dashboard.php' => 'Dashboard',
-    'catatan_pelanggaran.php' => 'Catat Pelanggaran',
-    'tindakan.php' => 'Tindakan',
-    'riwayat.php' => 'Riwayat',
-    'rekap_poin.php' => 'Rekap Poin',
-    'about_me.php' => 'About Me'
-];
+// Rekap total poin pelanggaran per siswa dikelas aktif
+$rekap = mysqli_query($koneksi, "
+    SELECT s.id, s.nama,
+           COALESCE(k.nama, '-') AS nama_kelas,
+           COALESCE(SUM(ps.poin), 0) AS total_poin
+    FROM t_siswa s
+    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
+    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+    LEFT JOIN t_pelanggaran_siswa ps ON ps.siswa_id = s.id
+    WHERE s.status_aktif = 1
+    GROUP BY s.id, s.nama, k.nama
+    ORDER BY total_poin DESC, s.nama
+");
 
-$halaman_aktif = basename($_SERVER['PHP_SELF']);
+if (!$rekap) {
+    die("Gagal mengambil rekap poin: " . mysqli_error($koneksi));
+}
+
+// Tindakan mengikuti akumulasi poin siswa
+function tindakan_poin(int $poin): string
+{
+    if ($poin > 100) return 'Panggilan Orang Tua / Dikembalikan';
+    if ($poin >= 50) return 'Skorsing & Pembinaan BK';
+    if ($poin >= 25) return 'Peringatan Tertulis';
+    if ($poin >= 10) return 'Peringatan Lisan';
+    return 'Aman';
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rekap Poin Siswa - UKK 2026</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f9;
-            display: flex;
-        }
-        /* Sidebar Styling */
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            height: 100vh;
-            color: white;
-            position: fixed;
-            padding-top: 20px;
-        }
-        .sidebar h3 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 18px;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar ul li a {
-            display: block;
-            color: #c2c7d0;
-            padding: 12px 20px;
-            text-decoration: none;
-            transition: 0.2s;
-        }
-        .sidebar ul li a:hover,
-        .sidebar ul li a.active {
-            background-color: #007bff;
-            color: white;
-        }
-        .sidebar ul li.logout {
-            margin-top: 40px;
-        }
-        .sidebar ul li.logout a {
-            color: #ff6b6b;
-        }
-        /* Content Styling */
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            width: calc(100% - 250px);
-        }
-        .header-box {
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        table th, table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-        }
-        table th {
-            background-color: #007bff;
-            color: white;
-        }
-        table tr:hover {
-            background-color: #f1f1f1;
-        }
-    </style>
+
+    <?php include 'layout/datatables_head.php'; ?>
 </head>
 <body>
 
-    <!-- Sidebar Navigasi -->
-    <div class="sidebar">
-        <h3>Panel Guru</h3>
-        <ul>
-            <?php foreach ($menuGuru as $file => $nama_menu) : ?>
-                <?php $is_active = ($halaman_aktif == $file) ? 'active' : ''; ?>
-                <li>
-                    <a href="<?php echo $file; ?>" class="<?php echo $is_active; ?>">
-                        <?php echo $nama_menu; ?>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-            
-            <li class="logout">
-                <a href="logout.php">Logout</a>
-            </li>
-        </ul>
+<!-- SIDEBAR BERSAMA -->
+<?php include 'layout/sidebar.php'; ?>
+
+<!-- KONTEN UTAMA -->
+<main class="app-main">
+
+    <div class="page-header">
+        <h1>Rekap Poin Pelanggaran Siswa</h1>
+        <a href="dashboard.php">Kembali ke Dashboard</a>
     </div>
 
-    <!-- Konten Utama Rekap Poin -->
-    <div class="main-content">
-        <div class="header-box">
-            <h2>Rekap Poin Pelanggaran Siswa</h2>
-            <hr>
-            <p>Berikut adalah ringkasan total akumulasi poin pelanggaran dari masing-masing siswa:</p>
+    <div class="table-card shadow-sm">
 
-            <table>
-                <thead>
+        <h5 class="mb-3">Rekap Akumulasi Poin</h5>
+
+        <div class="table-responsive">
+            <table id="tabelRekap"
+                   class="table table-striped table-bordered table-hover table-sm">
+
+                <thead class="thead-dark">
                     <tr>
                         <th>No</th>
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
-                        <th>Total Poin Pelanggaran</th>
+                        <th>Total Poin</th>
                         <th>Status / Tindakan</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    <?php
-                    // Contoh query sementara mengambil dari t_user (silakan disesuaikan dengan tabel siswa & pelanggaran Anda nanti)
-                    $query = "SELECT * FROM t_users WHERE role = 'guru' ORDER BY id DESC"; 
-                    $result = mysqli_query($koneksi, $query);
-                    
-                    if ($result && mysqli_num_rows($result) > 0) {
-                        $no = 1;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            echo "<tr>";
-                            echo "<td>" . $no++ . "</td>";
-                            echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                            echo "<td>-</td>";
-                            echo "<td>0</td>";
-                            echo "<td>Aman</td>";
-                            echo "</tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5' style='text-align: center;'>Belum ada data rekap poin.</td></tr>";
-                    }
-                    ?>
+                <?php if (mysqli_num_rows($rekap) > 0): ?>
+                    <?php $no = 1; ?>
+                    <?php while ($row = mysqli_fetch_assoc($rekap)): ?>
+                        <?php $total = (int)$row['total_poin']; ?>
+                        <tr>
+                            <td><?= $no++; ?></td>
+                            <td><?= htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td><?= htmlspecialchars($row['nama_kelas'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            <td>
+                                <?= $total > 0
+                                    ? '<span class="badge badge-danger">' . $total . '</span>'
+                                    : 0; ?>
+                            </td>
+                            <td><?= tindakan_poin($total); ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php endif; ?>
                 </tbody>
+
             </table>
         </div>
     </div>
+
+</main>
+
+<?php $dt_id = 'tabelRekap'; $dt_empty = 'Belum ada data rekap poin'; include 'layout/datatables_bottom.php'; ?>
 
 </body>
 </html>

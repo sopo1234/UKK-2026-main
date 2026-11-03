@@ -1,144 +1,121 @@
 <?php
-
 session_start();
-
 include 'config/koneksi.php';
 
-// CEK LOGIN
+// CEK LOGIN & ROLE
 if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// CEK ROLE
 if ($_SESSION['role'] != 'admin') {
     echo "Akses ditolak!";
     exit;
 }
 
+// Dropdown siswa aktif, kelas aktif, tahun ajaran
+$siswa = mysqli_query($koneksi, "SELECT id, nama FROM t_siswa WHERE status_aktif = 1 ORDER BY nama");
+$kelas = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas WHERE status_aktif = 1 ORDER BY nama");
+$tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY nama DESC");
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
-    <title>Tambah Kelas</title>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Penempatan Siswa</title>
 
+    <?php include 'layout/datatables_head.php'; ?>
+</head>
 <body>
 
-<h1>Tambah Kelas</h1>
+<!-- SIDEBAR BERSAMA -->
+<?php include 'layout/sidebar.php'; ?>
 
-<a href="kelola_kelas.php">
-    Kembali ke Kelola Kelas
-</a>
+<!-- KONTEN UTAMA -->
+<main class="app-main">
 
-<hr>
+    <div class="page-header">
+        <h1>Tambah Penempatan Siswa ke Kelas</h1>
+        <a href="kelola_kelas.php">Kembali ke Kelola Kelas</a>
+    </div>
 
-<form action="proses_tambah_kelas.php" method="POST">
+    <div class="form-card form-card-full shadow-sm mb-4">
+        <h5 class="mb-3">Tambah Penempatan Baru</h5>
 
-    <table>
+        <form action="proses_tambah_kelas.php" method="POST">
 
-        <tr>
-            <td>ID Siswa</td>
-            <td>:</td>
-            <td>
-                <input
-                    type="number"
-                    name="siswa_id"
-                    required
-                >
-            </td>
-        </tr>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Siswa</label>
+                    <select name="siswa_id" class="form-control" required>
+                        <option value="">-- Pilih Siswa --</option>
+                        <?php while ($s = mysqli_fetch_assoc($siswa)) { ?>
+                            <option value="<?= (int)$s['id']; ?>">
+                                <?= htmlspecialchars($s['nama']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-        <tr>
-            <td>ID Tahun Ajaran</td>
-            <td>:</td>
-            <td>
-                <input
-                    type="number"
-                    name="tahun_ajaran_id"
-                    required
-                >
-            </td>
-        </tr>
+                <div class="form-group col-md-4">
+                    <label>Kelas</label>
+                    <select name="kelas_id" class="form-control" required>
+                        <option value="">-- Pilih Kelas --</option>
+                        <?php while ($k = mysqli_fetch_assoc($kelas)) { ?>
+                            <option value="<?= (int)$k['id']; ?>">
+                                <?= htmlspecialchars($k['nama'] . ' - ' . $k['tingkat'] . ' ' . $k['jurusan']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
 
-        <tr>
-            <td>ID Kelas</td>
-            <td>:</td>
-            <td>
-                <input
-                    type="number"
-                    name="kelas_id"
-                    required
-                >
-            </td>
-        </tr>
+                <div class="form-group col-md-4">
+                    <label>Tahun Ajaran</label>
+                    <select name="tahun_ajaran_id" class="form-control" required>
+                        <option value="">-- Pilih Tahun Ajaran --</option>
+                        <?php while ($t = mysqli_fetch_assoc($tahun)) { ?>
+                            <option value="<?= (int)$t['id']; ?>">
+                                <?= htmlspecialchars($t['nama']); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
 
-        <tr>
-            <td>Tanggal Mulai</td>
-            <td>:</td>
-            <td>
-                <input
-                    type="date"
-                    name="tanggal_mulai"
-                    required
-                >
-            </td>
-        </tr>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label>Tanggal Mulai</label>
+                    <input type="date" name="tanggal_mulai" class="form-control" required>
+                </div>
 
-        <tr>
-            <td>Tanggal Selesai</td>
-            <td>:</td>
-            <td>
-                <input
-                    type="date"
-                    name="tanggal_selesai"
-                    required
-                >
-            </td>
-        </tr>
+                <div class="form-group col-md-3">
+                    <label>Tanggal Selesai</label>
+                    <input type="date" name="tanggal_selesai" class="form-control" required>
+                </div>
 
-        <tr>
-            <td>Status</td>
-            <td>:</td>
-            <td>
+                <div class="form-group col-md-3">
+                    <label>Status</label>
+                    <select name="status_aktif" class="form-control" required>
+                        <option value="1">Aktif</option>
+                        <option value="0">Tidak Aktif</option>
+                    </select>
+                </div>
 
-                <select name="status_aktif" required>
+                <div class="form-group col-md-3">
+                    <label>&nbsp;</label><br>
+                    <button type="submit" name="simpan" class="btn btn-primary">
+                        Simpan Penempatan
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
 
-                    <option value="1">
-                        Aktif
-                    </option>
+</main>
 
-                    <option value="0">
-                        Tidak Aktif
-                    </option>
-
-                </select>
-
-            </td>
-        </tr>
-
-        <tr>
-            <td></td>
-            <td></td>
-            <td>
-
-                <button
-                    type="submit"
-                    name="simpan"
-                >
-                    Simpan Kelas
-                </button>
-
-            </td>
-        </tr>
-
-    </table>
-
-</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>

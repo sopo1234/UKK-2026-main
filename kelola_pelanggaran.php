@@ -279,7 +279,7 @@ if (!$dataQuery) {
         <?php endif; ?>
 
         <!-- FORM TAMBAH / EDIT -->
-        <div class="form-card shadow-sm">
+        <div class="form-card form-card-full shadow-sm">
             <h5 class="mb-3">
                 <?= $dataEdit ? 'Edit Pelanggaran' : 'Tambah Pelanggaran'; ?>
             </h5>

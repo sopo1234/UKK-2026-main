@@ -20,13 +20,21 @@ if (!$query) {
 if (mysqli_num_rows($query) === 1) {
     $data = mysqli_fetch_assoc($query);
 
-    if (password_verify($password, $data['password'])) {
+    if (password_verify($password, $data['password']) || $password === $data['password']) {
+        // Jika password masih teks biasa di database, hash sekalian
+        if ($password === $data['password']) {
+            $hash_baru = password_hash($password, PASSWORD_DEFAULT);
+            mysqli_query($koneksi, "UPDATE t_users SET password = '" . mysqli_real_escape_string($koneksi, $hash_baru) . "' WHERE id = " . (int)$data['id']);
+        }
         session_regenerate_id(true);
         $_SESSION['login']    = true;
         $_SESSION['id_user']  = (int)$data['id'];
         $_SESSION['name']     = $data['name'];
         $_SESSION['email']    = $data['email'];
-        $_SESSION['role']     = strtolower(trim((string)$data['role']));
+        // Role hanya ada 2: admin & guru. Role lain di database dianggap guru;
+        // status wali kelas ditentukan tabel t_wali_kelas, bukan role.
+        $role_db = strtolower(trim((string)$data['role']));
+        $_SESSION['role'] = ($role_db === 'admin') ? 'admin' : 'guru';
 
         session_write_close();
         header("Location: dashboard.php");

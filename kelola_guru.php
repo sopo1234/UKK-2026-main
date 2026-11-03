@@ -83,7 +83,7 @@ if (!$hasil) {
     </div>
 
     <!-- FORM TAMBAH GURU (dipindah dari tambah_guru.php) -->
-    <div class="form-card shadow-sm mb-4">
+    <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Guru Baru</h5>
 
         <form action="proses_tambah_guru.php" method="POST">

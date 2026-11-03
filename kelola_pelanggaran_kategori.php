@@ -54,24 +54,19 @@ if (!$query) {
             <hr>
 
             <!-- FORM TAMBAH KATEGORI (dipindah dari tambah_pelanggaran_kategori.php) -->
-            <div class="form-card shadow-sm mb-4">
+            <div class="form-card form-card-full shadow-sm mb-4">
                 <h5 class="mb-3">Tambah Kategori Pelanggaran Baru</h5>
 
                 <!-- Aksi ke file proses asli (nama file memakai underscore di akhir) -->
                 <form action="proses_tambah_pelanggaran_kategori_.php" method="POST">
 
-                    <div class="form-group">
-                        <label>Nama Kategori</label>
-                        <input type="text" name="nama" class="form-control"
-                               maxlength="100" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Deskripsi</label>
-                        <textarea name="deskripsi" rows="3" class="form-control" required></textarea>
-                    </div>
-
                     <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label>Nama Kategori</label>
+                            <input type="text" name="nama" class="form-control"
+                                   maxlength="100" required>
+                        </div>
+
                         <div class="form-group col-md-4">
                             <label>Status</label>
                             <select name="status_aktif" class="form-control" required>
@@ -79,10 +74,17 @@ if (!$query) {
                                 <option value="0">Tidak Aktif</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label>Deskripsi</label>
+                            <textarea name="deskripsi" rows="3" class="form-control" required></textarea>
+                        </div>
 
                         <div class="form-group col-md-4">
                             <label>&nbsp;</label><br>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" name="simpan" class="btn btn-primary">
                                 Simpan Kategori
                             </button>
                         </div>
