@@ -98,7 +98,7 @@ function h($nilai) {
     </div>
 
     <!-- FORM TAMBAH SISWA (dipindah dari tambah_siswa.php) -->
-    <div class="form-card shadow-sm mb-4">
+    <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Siswa Baru</h5>
 
         <form action="proses_tambah_siswa.php" method="POST">

@@ -133,6 +133,11 @@ body {
     max-width: 720px;
 }
 
+/* Form full-width (penuh layar) */
+.form-card-full {
+    max-width: 100%;
+}
+
 .form-card label {
     display: block;
     font-size: 13px;
