@@ -46,7 +46,7 @@ CREATE TABLE `t_guru` (
 
 LOCK TABLES `t_guru` WRITE;
 /*!40000 ALTER TABLE `t_guru` DISABLE KEYS */;
-INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `created_at`, `updated_at`) VALUES (52,'198001012006011001','Wawan Kurniawan, S.Pd.I','wawan.kurniawan@sekolah.sch.id',1,151,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
+INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `created_at`, `updated_at`) VALUES (52,'198001012006011001','Wawan Kurniawan, S.Pd.I','wawan.kurniawan@sekolah.sch.id',1,151,'2026-11-04 05:20:57','2026-11-04 15:54:23'),
 (53,'198001012006011002','Ai Nuryaidah, S.Pd','ai.nuryaidah@sekolah.sch.id',1,152,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (54,'198001012006011003','Maya Permata Endah, S.Pd','maya.permata@sekolah.sch.id',1,153,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (55,'198001012006011004','Dody Jaenudin, S.Pd.','dody.jaenudin@sekolah.sch.id',1,154,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
@@ -96,7 +96,7 @@ INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `
 (99,'198001012006011048','Fahrullah, S.Pd','fahrullah@sekolah.sch.id',1,198,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (100,'198001012006011049','Aan Andriana, S.T','aan.andriana@sekolah.sch.id',1,199,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (101,'198001012006011050','Fitri Fauziah, S.T','fitri.fauziah@sekolah.sch.id',1,200,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
-(102,'198001012006011051','Nida Aulia, S.Pd','nida.aulia@sekolah.sch.id',1,201,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
+(102,'198001012006011051','Nida Aulia, S.Pd','nida.aulia@sekolah.sch.id',1,201,'2026-11-04 05:20:57','2026-11-04 15:52:40'),
 (103,'198001012006011052','Sri Nurrizki Putri Krisnadi, S.Pd','sri.nurrizki@sekolah.sch.id',1,202,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (104,'198001012006011053','Riesy Putri Navia, S.Kom','riesy.putri@sekolah.sch.id',1,203,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
 (105,'198001012006011054','Rurry Pebriani Maryadi, S.Pd','rurry.pebriani@sekolah.sch.id',1,204,'2026-11-04 05:20:57','2026-11-04 07:09:11'),
@@ -678,7 +678,7 @@ INSERT INTO `t_users` (`id`, `name`, `email`, `email_verified_at`, `password`, `
 (2,'Bapak Guru','guru@ukk2026.com','2026-10-02 01:57:34','$2y$10$GHyInVTPyZNxGFAWxrCvQe3b1nI.0jkzVWd.Zcg4waGWGjx06qsZS','','Guru','2026-10-02 01:57:34','2026-10-02 01:57:34'),
 (3,'Ibu Wali Kelas','walikelas@ukk2026.com','2026-10-02 01:57:34','$2y$10$UuGg3CXnKYPiX0zEPXaxJOnan8OSv9p9Pv5xfOdOu7efAlAvy/Jxa','','Guru','2026-10-02 01:57:34','2026-10-02 01:57:34'),
 (4,'nonok','nonok1@gmail.com','2026-10-02 03:25:49','guru123','','guru','2026-10-02 03:25:49','2026-10-02 03:25:49'),
-(151,'Wawan Kurniawan, S.Pd.I','wawan.kurniawan@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 06:17:13'),
+(151,'Wawan Kurniawan, S.Pd.I','wawan.kurniawan@sekolah.sch.id','2026-11-04 05:20:57','$2y$12$Is0yxKmYHuxonmLESKS0OOvyQW5Ar4XpVD5H4/bma8MtV9R5nFuAC','','guru','2026-11-04 05:20:57','2026-11-04 15:54:23'),
 (152,'Ai Nuryaidah, S.Pd','ai.nuryaidah@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:35:49'),
 (153,'Maya Permata Endah, S.Pd','maya.permata@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
 (154,'Dody Jaenudin, S.Pd.','dody.jaenudin@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
@@ -728,7 +728,7 @@ INSERT INTO `t_users` (`id`, `name`, `email`, `email_verified_at`, `password`, `
 (198,'Fahrullah, S.Pd','fahrullah@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
 (199,'Aan Andriana, S.T','aan.andriana@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
 (200,'Fitri Fauziah, S.T','fitri.fauziah@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
-(201,'Nida Aulia, S.Pd','nida.aulia@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
+(201,'Nida Aulia, S.Pd','nida.aulia@sekolah.sch.id','2026-11-04 05:20:57','$2y$12$anFxC85OopZnOwz6q4D.MO4Uc5MmsQY5HtONQwYV2.4GxgsOeZPM2','','guru','2026-11-04 05:20:57','2026-11-04 15:52:40'),
 (202,'Sri Nurrizki Putri Krisnadi, S.Pd','sri.nurrizki@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
 (203,'Riesy Putri Navia, S.Kom','riesy.putri@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
 (204,'Rurry Pebriani Maryadi, S.Pd','rurry.pebriani@sekolah.sch.id','2026-11-04 05:20:57','$2y$10$Thde/yhO9GxaV1yhCZsZH.EAJVDRgibBJpoQOilUp0pCB/X4.e5FO','','guru','2026-11-04 05:20:57','2026-11-04 05:20:57'),
@@ -907,4 +907,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-04 22:24:04
+-- Dump completed on 2026-11-04 22:59:26
