@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 include 'config/koneksi.php';
@@ -167,4 +166,3 @@ $(document).ready(function () {
 
 </body>
 </html>
-```

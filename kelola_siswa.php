@@ -107,13 +107,13 @@ function h($nilai) {
                 <div class="form-group col-md-3">
                     <label>NIS</label>
                     <input type="text" name="nis" class="form-control"
-                           maxlength="10" inputmode="numeric">
+                           maxlength="15" inputmode="numeric" pattern="[0-9]*">
                 </div>
 
                 <div class="form-group col-md-3">
                     <label>NISN</label>
                     <input type="text" name="nisn" class="form-control"
-                           maxlength="10" inputmode="numeric" required>
+                           maxlength="10" inputmode="numeric" pattern="[0-9]*" required>
                 </div>
 
                 <div class="form-group col-md-6">

@@ -19,8 +19,17 @@ if (!isset($_POST['edit'])) {
 }
 
 $id = $_POST['id'];
-$nis = $_POST['nis'];
-$nisn = $_POST['nisn'];
+$nis = trim($_POST['nis']);
+$nisn = trim($_POST['nisn']);
+
+// NIS boleh kosong (maks 15 digit), NISN wajib (maks 10 digit); keduanya hanya angka.
+if (
+    ($nis !== '' && (!ctype_digit($nis) || strlen($nis) > 15)) ||
+    !ctype_digit($nisn) ||
+    strlen($nisn) > 10
+) {
+    die("NIS maksimal 15 digit dan NISN maksimal 10 digit, hanya angka.");
+}
 $nama = $_POST['nama'];
 $jenis_kelamin = $_POST['jenis_kelamin'];
 $tanggal_lahir = $_POST['tanggal_lahir'];

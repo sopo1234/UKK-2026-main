@@ -26,6 +26,18 @@ if ($tanggal_selesai < $tanggal_mulai) {
     die("Tanggal selesai tidak boleh sebelum tanggal mulai.");
 }
 
+// Hanya boleh ada satu tahun ajaran aktif.
+if ($status_aktif === 1) {
+    $cek = mysqli_query(
+        $koneksi,
+        "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 LIMIT 1"
+    );
+
+    if (mysqli_num_rows($cek) > 0) {
+        die("Hanya boleh ada satu tahun ajaran aktif. Nonaktifkan tahun ajaran lain terlebih dahulu.");
+    }
+}
+
 $sql = "INSERT INTO t_tahun_ajaran
         (nama, tanggal_mulai, tanggal_selesai, status_aktif)
         VALUES

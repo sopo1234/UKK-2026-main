@@ -32,11 +32,6 @@ $hasil = mysqli_query($koneksi, $sql);
 if (!$hasil) {
     die("Gagal mengambil data: " . mysqli_error($koneksi));
 }
-
-// Data dropdown untuk form tambah (dipindah dari tambah_kelas.php)
-$q_siswa = mysqli_query($koneksi, "SELECT id, nama FROM t_siswa ORDER BY nama");
-$q_kelas  = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas ORDER BY nama");
-$q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
@@ -104,8 +99,14 @@ $q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY
 
                 <div class="form-group col-md-3">
                     <label>Jurusan</label>
-                    <input type="text" name="jurusan" class="form-control"
-                           required placeholder="Contoh: RPL">
+                    <select name="jurusan" class="form-control" required>
+                        <option value="">-- Pilih Jurusan --</option>
+                        <option value="RPL">RPL</option>
+                        <option value="TKJ">TKJ</option>
+                        <option value="BD">BD</option>
+                        <option value="TKR">TKR</option>
+                        <option value="TSM">TSM</option>
+                    </select>
                 </div>
 
                 <div class="form-group col-md-3">
@@ -123,79 +124,7 @@ $q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY
         </form>
     </div>
 
-    <!-- FORM 2: TAMBAH PENEMPATAN SISWA KE KELAS -->
-    <div class="form-card form-card-full shadow-sm mb-4">
-        <h5 class="mb-3">Tempatkan Siswa ke Kelas</h5>
-
-        <form action="proses_tambah_kelas.php" method="POST">
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Siswa</label>
-                    <select name="siswa_id" class="form-control" required>
-                        <option value="">-- Pilih Siswa --</option>
-                        <?php while ($s = mysqli_fetch_assoc($q_siswa)) { ?>
-                            <option value="<?= (int)$s['id']; ?>">
-                                <?= htmlspecialchars($s['nama']); ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-
-                <div class="form-group col-md-4">
-                    <label>Kelas</label>
-                    <select name="kelas_id" class="form-control" required>
-                        <option value="">-- Pilih Kelas --</option>
-                        <?php while ($k = mysqli_fetch_assoc($q_kelas)) { ?>
-                            <option value="<?= (int)$k['id']; ?>">
-                                <?= htmlspecialchars($k['nama'] . ' - ' . $k['tingkat'] . ' ' . $k['jurusan']); ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-
-                <div class="form-group col-md-4">
-                    <label>Tahun Ajaran</label>
-                    <select name="tahun_ajaran_id" class="form-control" required>
-                        <option value="">-- Pilih Tahun Ajaran --</option>
-                        <?php while ($t = mysqli_fetch_assoc($q_tahun)) { ?>
-                            <option value="<?= (int)$t['id']; ?>">
-                                <?= htmlspecialchars($t['nama']); ?>
-                            </option>
-                        <?php } ?>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-3">
-                    <label>Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" class="form-control" required>
-                </div>
-
-                <div class="form-group col-md-3">
-                    <label>Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai" class="form-control" required>
-                </div>
-
-                <div class="form-group col-md-3">
-                    <label>Status</label>
-                    <select name="status_aktif" class="form-control" required>
-                        <option value="1">Aktif</option>
-                        <option value="0">Tidak Aktif</option>
-                    </select>
-                </div>
-
-                <div class="form-group col-md-3">
-                    <label>&nbsp;</label><br>
-                    <button type="submit" name="simpan" class="btn btn-primary">
-                        Simpan Penempatan
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-            <div class="table-card shadow-sm">
+    <!-- FORM 1: TAMBAH KELAS BARU (dipindah dari tambah_kelas.php) -->
 
                 <div class="table-responsive">
 

@@ -93,6 +93,25 @@ if (!$tahun_valid) {
     exit;
 }
 
+// Pastikan siswa belum ditempatkan pada tahun ajaran ini
+$stmt = mysqli_prepare(
+    $koneksi,
+    "SELECT id FROM t_kelas_siswa
+     WHERE siswa_id = ? AND tahun_ajaran_id = ? LIMIT 1"
+);
+mysqli_stmt_bind_param($stmt, "ii", $siswa_id, $tahun_ajaran_id);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_store_result($stmt);
+
+$sudah_ditempatkan = mysqli_stmt_num_rows($stmt) > 0;
+mysqli_stmt_close($stmt);
+
+if ($sudah_ditempatkan) {
+    $_SESSION['pesan_error'] = "Siswa sudah ditempatkan pada tahun ajaran tersebut.";
+    header("Location: penempatan_siswa.php");
+    exit;
+}
+
 // Pastikan kelas tersedia dan aktif
 $stmt = mysqli_prepare(
     $koneksi,

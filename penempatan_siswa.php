@@ -18,20 +18,35 @@ function h($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Ambil siswa aktif
-$siswa = mysqli_query($koneksi, "
-    SELECT id, nisn, nama
-    FROM t_siswa
-    WHERE status_aktif = 1
-    ORDER BY nama ASC
-");
-
 // Ambil tahun ajaran aktif
 $tahun = mysqli_query($koneksi, "
     SELECT id, nama
     FROM t_tahun_ajaran
     WHERE status_aktif = 1
     ORDER BY id DESC
+");
+
+$ta_aktif = mysqli_fetch_assoc(mysqli_query($koneksi, "
+    SELECT id
+    FROM t_tahun_ajaran
+    WHERE status_aktif = 1
+    ORDER BY id DESC
+    LIMIT 1
+"));
+$id_ta = (int)($ta_aktif['id'] ?? 0);
+
+// Ambil siswa aktif yang belum ditempatkan pada tahun ajaran aktif
+$siswa = mysqli_query($koneksi, "
+    SELECT id, nis, nisn, nama
+    FROM t_siswa
+    WHERE status_aktif = 1
+      AND id NOT IN (
+          SELECT siswa_id
+          FROM t_kelas_siswa
+          WHERE tahun_ajaran_id = $id_ta
+            AND siswa_id IS NOT NULL
+      )
+    ORDER BY nama ASC
 ");
 
 // Ambil kelas aktif

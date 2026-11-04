@@ -78,14 +78,14 @@ mysqli_stmt_close($stmt);
                 <div class="form-group col-md-3">
                     <label>NIS</label>
                     <input type="text" name="nis" class="form-control"
-                           maxlength="10" inputmode="numeric"
+                           maxlength="15" inputmode="numeric" pattern="[0-9]*"
                            value="<?= htmlspecialchars((string)($siswa['nis'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="form-group col-md-3">
                     <label>NISN</label>
                     <input type="text" name="nisn" class="form-control"
-                           maxlength="10" inputmode="numeric" required
+                           maxlength="10" inputmode="numeric" pattern="[0-9]*" required
                            value="<?= htmlspecialchars((string)($siswa['nisn'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 

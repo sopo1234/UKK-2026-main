@@ -27,6 +27,39 @@ if ($tanggal_selesai < $tanggal_mulai) {
     die("Tanggal selesai tidak boleh sebelum tanggal mulai.");
 }
 
+// Tahun ajaran harus aktif, kelas dan guru belum menjadi wali pada tahun tersebut.
+$cek_ta = mysqli_query(
+    $koneksi,
+    "SELECT id FROM t_tahun_ajaran
+     WHERE id = $tahun_ajaran_id AND status_aktif = 1"
+);
+
+if (mysqli_num_rows($cek_ta) === 0) {
+    die("Tahun ajaran tidak ditemukan atau tidak aktif.");
+}
+
+$cek_kelas = mysqli_query(
+    $koneksi,
+    "SELECT id FROM t_wali_kelas
+     WHERE kelas_id = $kelas_id AND tahun_ajaran_id = $tahun_ajaran_id
+     LIMIT 1"
+);
+
+if (mysqli_num_rows($cek_kelas) > 0) {
+    die("Kelas ini sudah memiliki wali kelas pada tahun ajaran tersebut.");
+}
+
+$cek_guru = mysqli_query(
+    $koneksi,
+    "SELECT id FROM t_wali_kelas
+     WHERE guru_id = $guru_id AND tahun_ajaran_id = $tahun_ajaran_id
+     LIMIT 1"
+);
+
+if (mysqli_num_rows($cek_guru) > 0) {
+    die("Guru ini sudah menjadi wali kelas pada tahun ajaran tersebut.");
+}
+
 $query = "INSERT INTO t_wali_kelas
           (tahun_ajaran_id, kelas_id, guru_id,
            tanggal_mulai, tanggal_selesai, status_aktif)

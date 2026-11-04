@@ -23,11 +23,15 @@ if (!isset($_POST['simpan'])) {
 }
 
 // AMBIL DATA
-$nip = $_POST['nip'];
+$nip = trim($_POST['nip']);
 $nama = $_POST['nama'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $status_aktif = $_POST['status_aktif'];
+
+if (!ctype_digit($nip) || strlen($nip) > 18) {
+    die("NIP maksimal 18 digit dan hanya angka.");
+}
 
 // HASH PASSWORD
 $password_hash = password_hash(

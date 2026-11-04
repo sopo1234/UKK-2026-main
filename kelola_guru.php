@@ -92,7 +92,7 @@ if (!$hasil) {
                 <div class="form-group col-md-3">
                     <label>NIP</label>
                     <input type="text" name="nip" class="form-control"
-                           maxlength="10" inputmode="numeric" required>
+                           maxlength="18" inputmode="numeric" pattern="[0-9]*" required>
                 </div>
 
                 <div class="form-group col-md-5">
