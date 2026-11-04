@@ -18,7 +18,7 @@ if ($_SESSION['role'] != 'admin') {
 
 // CEK TOMBOL EDIT
 if (!isset($_POST['edit'])) {
-    header("Location: kelolaguru.php");
+    header("Location: kelola_guru.php");
     exit;
 }
 
@@ -105,7 +105,7 @@ if (!mysqli_query($koneksi, $sql_user)) {
 
 
 // KEMBALI
-header("Location: kelolaguru.php");
+header("Location: kelola_guru.php");
 exit;
 
 ?>

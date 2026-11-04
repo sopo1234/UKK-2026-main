@@ -14,12 +14,12 @@ if (isset($_POST['simpan'])) {
     $kode                    = mysqli_real_escape_string($koneksi, $_POST['kode']);
     $nama                    = mysqli_real_escape_string($koneksi, $_POST['nama']);
     $poin                    = mysqli_real_escape_string($koneksi, $_POST['poin']);
-    $deksripsi               = mysqli_real_escape_string($koneksi, $_POST['deksripsi']);
+    $deskripsi               = mysqli_real_escape_string($koneksi, $_POST['deskripsi']);
     $status_aktif            = mysqli_real_escape_string($koneksi, $_POST['status_aktif']);
 
     // Query INSERT ke tabel t_pelanggaran
-    $query = "INSERT INTO t_pelanggaran (pelanggaran_kategori_id, kode, nama, poin, deksripsi, status_aktif) 
-              VALUES ('$pelanggaran_kategori_id', '$kode', '$nama', '$poin', '$deksripsi', '$status_aktif')";
+    $query = "INSERT INTO t_pelanggaran (pelanggaran_kategori_id, kode, nama, poin, deskripsi, status_aktif) 
+              VALUES ('$pelanggaran_kategori_id', '$kode', '$nama', '$poin', '$deskripsi', '$status_aktif')";
     
     if (mysqli_query($koneksi, $query)) {
         header("Location: riwayat.php");
@@ -133,7 +133,7 @@ if (isset($_POST['simpan'])) {
 
             <div class="form-group">
                 <label>Deskripsi:</label>
-                <textarea name="deksripsi" placeholder="Keterangan tambahan pelanggaran..."></textarea>
+                <textarea name="deskripsi" placeholder="Keterangan tambahan pelanggaran..."></textarea>
             </div>
 
             <div class="form-group">

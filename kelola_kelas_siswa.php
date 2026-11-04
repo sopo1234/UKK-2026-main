@@ -145,8 +145,8 @@ if (!$hasil) {
             |
 
             <a
-                href="hapus_kelas.php?id=<?php echo $kelas['id']; ?>"
-                onclick="return confirm('Yakin ingin menghapus data kelas ini?')"
+                href="hapus_kelas_siswa.php?id=<?php echo (int)$kelas['id']; ?>"
+                onclick="return confirm('Yakin ingin menghapus penempatan siswa ini?')"
             >
                 <button type="button" class="btn btn-danger">Hapus</button>
             </a>

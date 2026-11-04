@@ -132,7 +132,7 @@ if (!isset($_SESSION['role'])) {
                         echo "<td>" . $no++ . "</td>";
                         echo "<td>" . htmlspecialchars($nama_kelas_val) . "</td>";
                         echo "<td>";
-                        echo "<a href='edit_kelas.php?id=" . $row['id'] . "' class='btn-action btn-edit'>Edit</a>";
+                        echo "<a href='edit_data_kelas.php?id=" . $row['id'] . "' class='btn-action btn-edit'>Edit</a>";
                         echo "<a href='hapus_kelas.php?id=" . $row['id'] . "' class='btn-action btn-hapus' onclick='return confirm(\"Yakin ingin menghapus kelas ini?\")'>Hapus</a>";
                         echo "</td>";
                         echo "</tr>";

@@ -1,130 +1,159 @@
 <?php
 session_start();
-include 'config/koneksi.php';
+require_once __DIR__ . '/config/koneksi.php';
 
-// Cek apakah user sudah login
-if (!isset($_SESSION['role'])) {
+if (!isset($_SESSION['login'])) {
     header("Location: login.php");
     exit;
 }
 
-// Ambil ID dari URL
+if (($_SESSION['role'] ?? '') !== 'admin') {
+    exit("Akses ditolak!");
+}
+
+// Menu aktif
+$activeMenu = 'kelas';
+
+// Ambil data penempatan kelas siswa berdasarkan ID
 if (!isset($_GET['id'])) {
-    header("Location: data_kelas.php");
+    header("Location: kelola_kelas.php");
     exit;
 }
 
-$id = mysqli_real_escape_string($koneksi, $_GET['id']);
+$id = (int) $_GET['id'];
 
-// Ambil data kelas berdasarkan ID
-$query_data = mysqli_query($koneksi, "SELECT * FROM t_kelas WHERE id = '$id'");
-if (mysqli_num_rows($query_data) === 0) {
-    header("Location: data_kelas.php");
+$stmt = mysqli_prepare($koneksi, "SELECT * FROM t_kelas_siswa WHERE id = ?");
+mysqli_stmt_bind_param($stmt, 'i', $id);
+mysqli_stmt_execute($stmt);
+$hasil = mysqli_stmt_get_result($stmt);
+
+if (!$hasil || mysqli_num_rows($hasil) === 0) {
+    header("Location: kelola_kelas.php");
     exit;
 }
-$kelas = mysqli_fetch_assoc($query_data);
 
-// Deteksi nama kolom secara aman (apakah 'nama_kelas' atau 'nama')
-$nama_kolom_db = array_key_exists('nama_kelas', $kelas) ? 'nama_kelas' : 'nama';
+$penempatan = mysqli_fetch_assoc($hasil);
+mysqli_stmt_close($stmt);
 
-// Proses update data ketika tombol simpan diklik
-if (isset($_POST['update'])) {
-    $nama_val = mysqli_real_escape_string($koneksi, $_POST['nama_kelas']);
-
-    $query_update = mysqli_query($koneksi, "UPDATE t_kelas SET $nama_kolom_db = '$nama_val' WHERE id = '$id'");
-
-    if ($query_update) {
-        header("Location: data_kelas.php");
-        exit;
-    } else {
-        $error = "Gagal memperbarui data kelas: " . mysqli_error($koneksi);
-    }
-}
+// Data untuk dropdown
+$siswa = mysqli_query($koneksi, "SELECT id, nama FROM t_siswa ORDER BY nama");
+$kelas = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas ORDER BY nama");
+$tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY nama DESC");
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Kelas - UKK 2026</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f6f9;
-            color: #333;
-        }
-        .container {
-            max-width: 500px;
-            background: white;
-            padding: 25px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-top: 0;
-        }
-        hr {
-            border: 0;
-            border-top: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Penempatan Kelas</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="layout/layout.css">
 </head>
+
 <body>
 
-    <div class="container">
-        <h2>Edit Data Kelas</h2>
-        <hr>
+<!-- SIDEBAR BERSAMA -->
+<?php require_once __DIR__ . '/layout/sidebar.php'; ?>
 
-        <?php if (isset($error)) : ?>
-            <p style="color: red;"><?php echo $error; ?></p>
-        <?php endif; ?>
+<!-- KONTEN UTAMA -->
+<main class="app-main">
 
-        <form action="" method="POST">
-            <div class="form-group">
-                <label>Nama Kelas:</label>
-                <input type="text" name="nama_kelas" value="<?php echo htmlspecialchars($kelas[$nama_kolom_db]); ?>" required>
+    <div class="page-header">
+        <h1>Edit Penempatan Kelas</h1>
+
+        <a href="kelola_kelas.php" class="btn btn-secondary">
+            Kembali ke Kelola Kelas
+        </a>
+    </div>
+
+    <div class="form-card form-card-full shadow-sm mb-4">
+        <h5 class="mb-3">Edit Penempatan Siswa ke Kelas</h5>
+
+        <form action="proses_edit_kelas.php" method="POST">
+
+            <input type="hidden" name="id"
+                   value="<?= (int)$penempatan['id']; ?>">
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Siswa</label>
+                    <select name="siswa_id" class="form-control" required>
+                        <?php while ($s = mysqli_fetch_assoc($siswa)) { ?>
+                            <option value="<?= (int)$s['id']; ?>"
+                                <?= (int)$s['id'] === (int)($penempatan['siswa_id'] ?? 0) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars((string)$s['nama'], ENT_QUOTES, 'UTF-8'); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>Kelas</label>
+                    <select name="kelas_id" class="form-control" required>
+                        <?php while ($k = mysqli_fetch_assoc($kelas)) { ?>
+                            <option value="<?= (int)$k['id']; ?>"
+                                <?= (int)$k['id'] === (int)($penempatan['kelas_id'] ?? 0) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($k['nama'] . ' - ' . $k['tingkat'] . ' ' . $k['jurusan'], ENT_QUOTES, 'UTF-8'); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>Tahun Ajaran</label>
+                    <select name="tahun_ajaran_id" class="form-control" required>
+                        <?php while ($ta = mysqli_fetch_assoc($tahun)) { ?>
+                            <option value="<?= (int)$ta['id']; ?>"
+                                <?= (int)$ta['id'] === (int)($penempatan['tahun_ajaran_id'] ?? 0) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars((string)$ta['nama'], ENT_QUOTES, 'UTF-8'); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                </div>
             </div>
 
-            <button type="submit" name="update">Perbarui Kelas</button>
-            <a href="data_kelas.php">Kembali</a>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label>Tanggal Mulai</label>
+                    <input type="date" name="tanggal_mulai" class="form-control" required
+                           value="<?= htmlspecialchars((string)($penempatan['tanggal_mulai'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Tanggal Selesai</label>
+                    <input type="date" name="tanggal_selesai" class="form-control" required
+                           value="<?= htmlspecialchars((string)($penempatan['tanggal_selesai'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>Status</label>
+                    <select name="status_aktif" class="form-control" required>
+                        <option value="1" <?= (int)($penempatan['status_aktif'] ?? 0) === 1 ? 'selected' : ''; ?>>Aktif</option>
+                        <option value="0" <?= (int)($penempatan['status_aktif'] ?? 0) === 0 ? 'selected' : ''; ?>>Tidak Aktif</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>&nbsp;</label><br>
+                    <button type="submit" name="edit" class="btn btn-primary">
+                        Perbarui Data
+                    </button>
+                </div>
+            </div>
+
         </form>
     </div>
+
+</main>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

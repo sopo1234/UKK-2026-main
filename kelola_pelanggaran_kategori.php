@@ -53,6 +53,15 @@ if (!$query) {
 
             <hr>
 
+            <?php if (isset($_GET['pesan'])): ?>
+                <div class="alert alert-<?= ($_GET['status'] ?? 'sukses') === 'sukses' ? 'success' : 'danger'; ?> alert-dismissible fade show" role="alert">
+                    <?= htmlspecialchars((string)$_GET['pesan'], ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <?php endif; ?>
+
             <!-- FORM TAMBAH KATEGORI (dipindah dari tambah_pelanggaran_kategori.php) -->
             <div class="form-card form-card-full shadow-sm mb-4">
                 <h5 class="mb-3">Tambah Kategori Pelanggaran Baru</h5>
@@ -194,4 +203,3 @@ $(document).ready(function () {
 
 </body>
 </html>
-```

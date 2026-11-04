@@ -265,9 +265,9 @@ $q_tahun  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY
                                     Edit
                                 </a>
 
-                                <a href="hapus_kelas.php?id=<?= (int)$data['id']; ?>"
+                                <a href="hapus_kelas_siswa.php?id=<?= (int)$data['id']; ?>"
                                    class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                   onclick="return confirm('Yakin ingin menghapus penempatan siswa ini?')">
                                     Hapus
                                 </a>
                             </td>

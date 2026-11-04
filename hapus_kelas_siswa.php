@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-
 include 'config/koneksi.php';
 
 // CEK LOGIN
@@ -12,34 +11,34 @@ if (!isset($_SESSION['login'])) {
 
 // CEK ROLE
 if ($_SESSION['role'] != 'admin') {
-    echo "Akses ditolak!";
-    exit;
+    die("Akses ditolak!");
 }
 
 // CEK ID
 if (!isset($_GET['id'])) {
-    echo "ID kelas tidak ditemukan!";
-    exit;
+    die("ID penempatan tidak ditemukan!");
 }
 
-$id = $_GET['id'];
+$id = (int) $_GET['id'];
 
-
-// HAPUS DATA
-$sql = "DELETE FROM t_kelas_siswa
-        WHERE id='$id'";
-
-
-if (mysqli_query($koneksi, $sql)) {
+// HAPUS PENEMPATAN SISWA KE KELAS
+// (tidak ada tabel lain yang menunjuk ke t_kelas_siswa,
+//  jadi cukup hapus satu baris ini)
+try {
+    $stmt = mysqli_prepare(
+        $koneksi,
+        "DELETE FROM t_kelas_siswa WHERE id = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     header("Location: kelola_kelas.php");
     exit;
 
-} else {
-
-    echo "Gagal menghapus data kelas: "
-         . mysqli_error($koneksi);
-
+} catch (mysqli_sql_exception $e) {
+    echo "Gagal menghapus penempatan: "
+         . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
 }
 
 ?>
