@@ -108,13 +108,14 @@ if (!$siswa || !$tahun || !$kelas || !$hasil) {
 
     <style>
         body {
-            background: #f4f7f9;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
         }
 
         .konten {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(22, 163, 74, 0.12);
         }
     </style>
 </head>

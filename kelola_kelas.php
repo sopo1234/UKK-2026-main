@@ -124,71 +124,74 @@ if (!$hasil) {
         </form>
     </div>
 
-    <!-- FORM 1: TAMBAH KELAS BARU (dipindah dari tambah_kelas.php) -->
+    <div class="table-card shadow-sm">
 
-                <div class="table-responsive">
+        <h5 class="mb-3">Daftar Penempatan Siswa</h5>
 
-                    <table id="tabelKelas"
-                       class="table table-striped table-bordered table-hover table-sm">
+        <div class="table-responsive">
 
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Siswa</th>
-                            <th>Kelas</th>
-                            <th>Tahun Ajaran</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+            <table id="tabelKelas"
+                   class="table table-striped table-bordered table-hover table-sm">
 
-                    <tbody>
+                <thead class="thead-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Kelas</th>
+                        <th>Tahun Ajaran</th>
+                        <th>Tanggal Mulai</th>
+                        <th>Tanggal Selesai</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
 
-                    <?php
-                    $no = 1;
+                <tbody>
 
-                    while ($data = mysqli_fetch_assoc($hasil)) {
-                    ?>
+                <?php
+                $no = 1;
 
-                        <tr>
+                while ($data = mysqli_fetch_assoc($hasil)) {
+                ?>
 
-                            <td><?= $no++; ?></td>
+                    <tr>
 
-                            <td>
-                                <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                            </td>
+                        <td><?= $no++; ?></td>
 
-                            <td>
-                                <?= htmlspecialchars(
-                                    ($data['nama_kelas'] ?? '-') . ' - ' .
-                                    ($data['tingkat'] ?? '-') . ' ' .
-                                    ($data['jurusan'] ?? '')
-                                ); ?>
-                            </td>
+                        <td>
+                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                        </td>
 
-                            <td>
-                                <?= htmlspecialchars($data['tahun_ajaran'] ?? '-'); ?>
-                            </td>
+                        <td>
+                            <?= htmlspecialchars(
+                                ($data['nama_kelas'] ?? '-') . ' - ' .
+                                ($data['tingkat'] ?? '-') . ' ' .
+                                ($data['jurusan'] ?? '')
+                            ); ?>
+                        </td>
 
-                            <td>
-                                <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
-                            </td>
+                        <td>
+                            <?= htmlspecialchars($data['tahun_ajaran'] ?? '-'); ?>
+                        </td>
 
-                            <td>
-                                <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
-                            </td>
+                        <td>
+                            <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
+                        </td>
 
-                            <td>
-                                <?php if ((int)($data['status_aktif'] ?? 0) === 1) { ?>
-                                    <span class="badge badge-success">Aktif</span>
-                                <?php } else { ?>
-                                    <span class="badge badge-secondary">Tidak Aktif</span>
-                                <?php } ?>
-                            </td>
+                        <td>
+                            <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
+                        </td>
 
-                            <td>
+                        <td>
+                            <?php if ((int)($data['status_aktif'] ?? 0) === 1) { ?>
+                                <span class="badge badge-success">Aktif</span>
+                            <?php } else { ?>
+                                <span class="badge badge-secondary">Tidak Aktif</span>
+                            <?php } ?>
+                        </td>
+
+                        <td>
+                            <div class="aksi">
                                 <a href="edit_kelas.php?id=<?= (int)$data['id']; ?>"
                                    class="btn btn-warning btn-sm">
                                     Edit
@@ -199,22 +202,23 @@ if (!$hasil) {
                                    onclick="return confirm('Yakin ingin menghapus penempatan siswa ini?')">
                                     Hapus
                                 </a>
-                            </td>
+                            </div>
+                        </td>
 
-                        </tr>
+                    </tr>
 
-                    <?php
-                    }
-                    ?>
+                <?php
+                }
+                ?>
 
-                    </tbody>
+                </tbody>
 
-                </table>
+            </table>
 
-                </div>
-            </div>
+        </div>
+    </div>
 
-        </main>
+</main>
 
 <!-- JAVASCRIPT -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

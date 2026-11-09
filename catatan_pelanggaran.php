@@ -1,6 +1,7 @@
 <?php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
+include 'includes/wali_kelas.php';
 
 // Halaman ini khusus guru
 if (($_SESSION['role'] ?? '') != 'guru') {
@@ -22,16 +23,37 @@ if (!$guru) {
 
 $guru_id = (int)$guru['id'];
 
-// Ambil siswa yang mempunyai penempatan kelas aktif
-$siswa = mysqli_query($koneksi, "
-    SELECT ks.id AS penempatan_id, s.nama AS nama_siswa,
-           k.nama AS nama_kelas
-    FROM t_kelas_siswa ks
-    JOIN t_siswa s ON s.id = ks.siswa_id
-    JOIN t_kelas k ON k.id = ks.kelas_id
-    WHERE ks.status_aktif = 1 AND s.status_aktif = 1
-    ORDER BY s.nama
-");
+// Kelas yang diampu wali kelas aktif (null jika guru belum jadi wali kelas)
+$wali = cari_wali_kelas($koneksi, $user_id);
+$wali_kelas_id = $wali ? (int)$wali['kelas_id'] : null;
+
+// Ambil siswa yang mempunyai penempatan kelas aktif.
+// Wali kelas hanya melihat siswa dari kelas yang diampu.
+if ($wali_kelas_id) {
+    $stmt = mysqli_prepare($koneksi, "
+        SELECT ks.id AS penempatan_id, s.nama AS nama_siswa,
+               k.nama AS nama_kelas
+        FROM t_kelas_siswa ks
+        JOIN t_siswa s ON s.id = ks.siswa_id
+        JOIN t_kelas k ON k.id = ks.kelas_id
+        WHERE ks.status_aktif = 1 AND s.status_aktif = 1
+          AND ks.kelas_id = ?
+        ORDER BY s.nama
+    ");
+    mysqli_stmt_bind_param($stmt, "i", $wali_kelas_id);
+    mysqli_stmt_execute($stmt);
+    $siswa = mysqli_stmt_get_result($stmt);
+} else {
+    $siswa = mysqli_query($koneksi, "
+        SELECT ks.id AS penempatan_id, s.nama AS nama_siswa,
+               k.nama AS nama_kelas
+        FROM t_kelas_siswa ks
+        JOIN t_siswa s ON s.id = ks.siswa_id
+        JOIN t_kelas k ON k.id = ks.kelas_id
+        WHERE ks.status_aktif = 1 AND s.status_aktif = 1
+        ORDER BY s.nama
+    ");
+}
 
 // Ambil jenis pelanggaran aktif
 $pelanggaran = mysqli_query($koneksi, "
@@ -41,16 +63,30 @@ $pelanggaran = mysqli_query($koneksi, "
     ORDER BY nama
 ");
 
-// Ambil catatan milik guru yang login
-$stmt = mysqli_prepare($koneksi, "
-    SELECT *
-    FROM t_pelanggaran_siswa
-    WHERE guru_id = ?
-    ORDER BY tanggal DESC, id DESC
-");
-mysqli_stmt_bind_param($stmt, "i", $guru_id);
-mysqli_stmt_execute($stmt);
-$catatan = mysqli_stmt_get_result($stmt);
+// Ambil catatan pelanggaran.
+// Wali kelas hanya melihat catatan dari kelas yang diampu;
+// guru biasa melihat catatan miliknya sendiri.
+if ($wali_kelas_id) {
+    $stmt = mysqli_prepare($koneksi, "
+        SELECT *
+        FROM t_pelanggaran_siswa
+        WHERE kelas_id = ?
+        ORDER BY tanggal DESC, id DESC
+    ");
+    mysqli_stmt_bind_param($stmt, "i", $wali_kelas_id);
+    mysqli_stmt_execute($stmt);
+    $catatan = mysqli_stmt_get_result($stmt);
+} else {
+    $stmt = mysqli_prepare($koneksi, "
+        SELECT *
+        FROM t_pelanggaran_siswa
+        WHERE guru_id = ?
+        ORDER BY tanggal DESC, id DESC
+    ");
+    mysqli_stmt_bind_param($stmt, "i", $guru_id);
+    mysqli_stmt_execute($stmt);
+    $catatan = mysqli_stmt_get_result($stmt);
+}
 
 // Mengamankan teks sebelum ditampilkan ke halaman
 function aman_catatan($teks) {
@@ -76,7 +112,13 @@ function aman_catatan($teks) {
 <main class="app-main">
 
     <h2>Catatan Pelanggaran Siswa</h2>
-    <p>Selamat datang, <b><?= aman_catatan($guru['nama']) ?></b>.</p>
+    <p>Selamat datang, <b><?= aman_catatan($guru['nama']) ?></b>.
+
+    <?php if ($wali): ?>
+        Anda wali kelas <b><?= aman_catatan($wali['nama_kelas'] ?? '-') ?></b>,
+        sehingga hanya melihat data dan pelanggaran dari kelas tersebut.
+    <?php endif; ?>
+    </p>
 
     <?php if (isset($_GET['pesan'])): ?>
         <div class="alert alert-info">
@@ -184,16 +226,18 @@ function aman_catatan($teks) {
                                 <td><?= aman_catatan($d['tindakan']) ?></td>
                                 <td><?= aman_catatan($d['status']) ?></td>
                                 <td>
-                                    <a href="edit_pelanggaran.php?id=<?= (int)$d['id'] ?>"
-                                       class="btn btn-warning btn-sm mb-1">Edit</a>
+                                    <?php if ((int)$d['guru_id'] === $guru_id): ?>
+                                        <a href="edit_pelanggaran.php?id=<?= (int)$d['id'] ?>"
+                                           class="btn btn-warning btn-sm mb-1">Edit</a>
 
-                                    <form action="hapus_pelanggaran.php" method="POST"
-                                          onsubmit="return confirm('Yakin ingin menghapus catatan ini?')">
-                                        <input type="hidden" name="id"
-                                               value="<?= (int)$d['id'] ?>">
-                                        <button type="submit"
-                                                class="btn btn-danger btn-sm">Hapus</button>
-                                    </form>
+                                        <form action="hapus_pelanggaran.php" method="POST"
+                                              onsubmit="return confirm('Yakin ingin menghapus catatan ini?')">
+                                            <input type="hidden" name="id"
+                                                   value="<?= (int)$d['id'] ?>">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">Hapus</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endwhile; ?>

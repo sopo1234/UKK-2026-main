@@ -8,13 +8,31 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'guru') {
     exit;
 }
 
-// Riwayat seluruh catatan pelanggaran (semua guru)
-$riwayat = mysqli_query($koneksi, "
-    SELECT tanggal, nama_siswa, nama_kelas, nama_pelanggaran,
-           poin, nama_guru, status
-    FROM t_pelanggaran_siswa
-    ORDER BY tanggal DESC, id DESC
-");
+// Riwayat catatan pelanggaran.
+// Wali kelas hanya melihat riwayat dari kelas yang diampu.
+include 'includes/wali_kelas.php';
+$wali = cari_wali_kelas($koneksi, (int)($_SESSION['id_user'] ?? 0));
+
+if ($wali) {
+    $stmt = mysqli_prepare($koneksi, "
+        SELECT tanggal, nama_siswa, nama_kelas, nama_pelanggaran,
+               poin, nama_guru, status
+        FROM t_pelanggaran_siswa
+        WHERE kelas_id = ?
+        ORDER BY tanggal DESC, id DESC
+    ");
+    mysqli_stmt_bind_param($stmt, "i", $wali['kelas_id']);
+    mysqli_stmt_execute($stmt);
+    $riwayat = mysqli_stmt_get_result($stmt);
+} else {
+    // Riwayat seluruh catatan pelanggaran (semua guru)
+    $riwayat = mysqli_query($koneksi, "
+        SELECT tanggal, nama_siswa, nama_kelas, nama_pelanggaran,
+               poin, nama_guru, status
+        FROM t_pelanggaran_siswa
+        ORDER BY tanggal DESC, id DESC
+    ");
+}
 
 if (!$riwayat) {
     die("Gagal mengambil riwayat: " . mysqli_error($koneksi));

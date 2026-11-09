@@ -166,6 +166,58 @@ $data = $pdo->query(
 <head>
     <meta charset="UTF-8">
     <title>Kelola Pelanggaran Siswa</title>
+    <link rel="stylesheet" href="layout/layout.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 25px;
+        }
+
+        h2, h3 {
+            color: #14532d;
+        }
+
+        select, input[type="text"], input[type="date"] {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 10px;
+        }
+
+        button {
+            background-color: #16a34a;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #14532d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table th {
+            background-color: #14532d;
+            color: #ffffff;
+        }
+
+        table th, table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #dcfce7;
+        }
+
+        table tr:hover {
+            background-color: #f0fdf4;
+        }
+    </style>
 </head>
 <body>
 

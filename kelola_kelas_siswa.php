@@ -16,12 +16,28 @@ if ($_SESSION['role'] != 'guru') {
     exit;
 }
 
-// AMBIL DATA
-$sql = "SELECT *
-        FROM t_kelas_siswa
-        ORDER BY id DESC";
+// Halaman ini hanya untuk wali kelas aktif,
+// dan hanya menampilkan penempatan siswa di kelas yang diampu.
+include 'includes/wali_kelas.php';
+$wali = cari_wali_kelas($koneksi, (int)($_SESSION['id_user'] ?? 0));
 
-$hasil = mysqli_query($koneksi, $sql);
+if (!$wali) {
+    echo "Akses ditolak! Anda belum ditunjuk sebagai wali kelas.";
+    exit;
+}
+
+$wali_kelas_id = (int)$wali['kelas_id'];
+
+// AMBIL DATA (hanya kelas yang diampu)
+$stmt = mysqli_prepare($koneksi, "
+    SELECT *
+    FROM t_kelas_siswa
+    WHERE kelas_id = ?
+    ORDER BY id DESC
+");
+mysqli_stmt_bind_param($stmt, "i", $wali_kelas_id);
+mysqli_stmt_execute($stmt);
+$hasil = mysqli_stmt_get_result($stmt);
 
 if (!$hasil) {
     die("Gagal mengambil data kelas: " . mysqli_error($koneksi));
@@ -49,7 +65,7 @@ if (!$hasil) {
 <!-- KONTEN UTAMA -->
 <main class="app-main">
 
-<h1>Kelola Kelas</h1>
+<h1>Data Siswa Kelas <?= htmlspecialchars($wali['nama_kelas'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></h1>
 
 <a href="dashboard.php">
     Kembali ke Dashboard
@@ -57,13 +73,9 @@ if (!$hasil) {
 
 <br><br>
 
-<a href="tambah_kelas.php">
-    Tambah Kelas
-</a>
-
 <hr>
 
-<h2>Data Kelas Siswa</h2>
+<h2>Daftar Penempatan Siswa</h2>
 
 <table class="table table-sm table-dark">
 

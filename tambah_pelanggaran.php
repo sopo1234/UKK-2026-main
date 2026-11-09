@@ -39,22 +39,23 @@ if (isset($_POST['simpan'])) {
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f4f6f9;
-            color: #333;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #14532d;
         }
         .container {
             max-width: 600px;
             background: white;
             padding: 25px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(22, 163, 74, 0.15);
         }
         h2 {
             margin-top: 0;
+            color: #14532d;
         }
         hr {
             border: 0;
-            border-top: 1px solid #dee2e6;
+            border-top: 1px solid #dcfce7;
             margin-bottom: 20px;
         }
         .form-group {
@@ -71,9 +72,17 @@ if (isset($_POST['simpan'])) {
         select {
             width: 100%;
             padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             box-sizing: border-box;
+            outline: none;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
         }
         textarea {
             resize: vertical;
@@ -81,17 +90,17 @@ if (isset($_POST['simpan'])) {
         }
         button {
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #16a34a;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #14532d;
         }
         a {
-            color: #007bff;
+            color: #166534;
             text-decoration: none;
             margin-left: 10px;
         }

@@ -20,11 +20,17 @@ if (!isset($_SESSION['login'])) {
 
     <style>
         :root {
-            --ink: #17181c;
-            --muted: #6b7080;
-            --line: #e5e7eb;
-            --bg: #fcfcfd;
-            --aksen: #2563eb;
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-600: #16a34a;
+            --green-700: #14532d;
+            --green-800: #166534;
+            --white: #ffffff;
+            --ink: #14532d;
+            --muted: #166534;
+            --line: #bbf7d0;
+            --bg: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%);
+            --aksen: #16a34a;
         }
 
         body {
@@ -81,7 +87,7 @@ if (!isset($_SESSION['login'])) {
             display: grid;
             place-items: center;
             border-radius: 50%;
-            background: var(--ink);
+            background: var(--green-700);
             color: #fff;
             font-weight: 700;
             font-size: clamp(1.6rem, 3vw, 2rem);
@@ -97,13 +103,13 @@ if (!isset($_SESSION['login'])) {
             inset: -7px;
             border-radius: 50%;
             border: 2px solid transparent;
-            border-top-color: var(--aksen);
+            border-top-color: var(--green-600);
             animation: putar 2.6s linear infinite;
         }
 
         .monogram::after {
             inset: -14px;
-            border-top-color: rgba(37, 99, 235, .35);
+            border-top-color: rgba(22, 163, 74, .35);
             animation-duration: 5s;
             animation-direction: reverse;
         }
@@ -118,7 +124,7 @@ if (!isset($_SESSION['login'])) {
             font-weight: 600;
             letter-spacing: .14em;
             text-transform: uppercase;
-            color: var(--aksen);
+            color: var(--green-600);
         }
 
         .profil-head h1 {
@@ -140,7 +146,7 @@ if (!isset($_SESSION['login'])) {
             height: 4px;
             width: 100%;
             border-radius: 4px;
-            background: linear-gradient(90deg, var(--aksen), #7c3aed);
+            background: linear-gradient(90deg, var(--green-600), var(--green-700));
             transform-origin: left;
             animation: tarik .8s .5s cubic-bezier(.2, .7, .3, 1) both;
         }
@@ -174,7 +180,7 @@ if (!isset($_SESSION['login'])) {
             content: "";
             width: 18px;
             height: 2px;
-            background: var(--aksen);
+            background: var(--green-600);
             transition: width .3s ease;
         }
 
@@ -205,7 +211,7 @@ if (!isset($_SESSION['login'])) {
         }
 
         .data-diri .baris:hover {
-            background: rgba(37, 99, 235, .06);
+            background: rgba(22, 163, 74, .08);
             transform: translateX(6px);
         }
 
@@ -236,8 +242,8 @@ if (!isset($_SESSION['login'])) {
 
         .kartu-proyek:hover {
             transform: translateY(-5px);
-            border-color: rgba(37, 99, 235, .45);
-            box-shadow: 0 16px 34px -18px rgba(23, 24, 28, .28);
+            border-color: rgba(22, 163, 74, .45);
+            box-shadow: 0 16px 34px -18px rgba(20, 83, 45, .28);
         }
 
         .kartu-proyek h3 {

@@ -54,6 +54,14 @@ if (!$s) {
     die("Penempatan siswa tidak ditemukan atau tidak aktif.");
 }
 
+// Wali kelas hanya boleh mencatat pelanggaran siswa di kelas yang diampu
+include 'includes/wali_kelas.php';
+$wali = cari_wali_kelas($koneksi, $user_id);
+if ($wali && (int)$s['kelas_id'] !== (int)$wali['kelas_id']) {
+    die("Akses ditolak: Anda wali kelas " . htmlspecialchars($wali['nama_kelas'] ?? '-', ENT_QUOTES, 'UTF-8')
+        . ", sehingga hanya boleh mencatat pelanggaran siswa dari kelas tersebut.");
+}
+
 // Ambil jenis pelanggaran
 $stmt = mysqli_prepare($koneksi, "
     SELECT id, nama, poin, pelanggaran_kategori_id

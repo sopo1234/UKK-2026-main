@@ -261,6 +261,9 @@ function h($nilai) {
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
 
+<!-- NIS dan NISN hanya boleh angka -->
+<script src="layout/numeric_only.js"></script>
+
 <script>
 $(document).ready(function () {
     $('#tabelSiswa').DataTable({

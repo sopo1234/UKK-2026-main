@@ -231,6 +231,9 @@ if (!$hasil) {
 
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
 
+<!-- NIP hanya boleh angka -->
+<script src="layout/numeric_only.js"></script>
+
 <script>
 $(document).ready(function () {
 
