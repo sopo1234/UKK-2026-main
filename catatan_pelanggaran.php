@@ -169,15 +169,9 @@ function aman_catatan($teks) {
             </div>
 
             <div class="form-row">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-8">
                     <label>Keterangan</label>
                     <textarea name="keterangan" class="form-control"
-                              rows="3" required></textarea>
-                </div>
-
-                <div class="form-group col-md-4">
-                    <label>Tindakan</label>
-                    <textarea name="tindakan" class="form-control"
                               rows="3" required></textarea>
                 </div>
 
@@ -206,7 +200,6 @@ function aman_catatan($teks) {
                             <th>Pelanggaran</th>
                             <th>Poin</th>
                             <th>Keterangan</th>
-                            <th>Tindakan</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -223,7 +216,6 @@ function aman_catatan($teks) {
                                 <td><?= aman_catatan($d['nama_pelanggaran']) ?></td>
                                 <td><?= (int)$d['poin'] ?></td>
                                 <td><?= aman_catatan($d['keterangan']) ?></td>
-                                <td><?= aman_catatan($d['tindakan']) ?></td>
                                 <td><?= aman_catatan($d['status']) ?></td>
                                 <td>
                                     <?php if ((int)$d['guru_id'] === $guru_id): ?>

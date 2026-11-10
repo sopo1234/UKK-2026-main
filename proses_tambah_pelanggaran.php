@@ -24,10 +24,10 @@ $penempatan_id = (int)($_POST['penempatan_id'] ?? 0);
 $pelanggaran_id = (int)($_POST['pelanggaran_id'] ?? 0);
 $tanggal = $_POST['tanggal'] ?? '';
 $keterangan = trim($_POST['keterangan'] ?? '');
-$tindakan = trim($_POST['tindakan'] ?? '');
+$tindakan = ''; // Tindakan tidak diinput manual, akan ditentukan berdasarkan akumulasi poin
 
 if (!$penempatan_id || !$pelanggaran_id || !$tanggal ||
-    $keterangan === '' || $tindakan === '') {
+    $keterangan === '') {
     die("Semua kolom wajib diisi.");
 }
 

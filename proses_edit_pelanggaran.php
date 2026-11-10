@@ -23,7 +23,6 @@ $guru_id = (int)$guru['id'];
 $id = (int)($_POST['id'] ?? 0);
 $tanggal = $_POST['tanggal'] ?? '';
 $keterangan = trim($_POST['keterangan'] ?? '');
-$tindakan = trim($_POST['tindakan'] ?? '');
 $status = $_POST['status'] ?? '';
 
 $status_valid = ['Belum diproses', 'Diproses', 'Selesai'];
@@ -32,7 +31,6 @@ if (
     $id <= 0 ||
     $tanggal === '' ||
     $keterangan === '' ||
-    $tindakan === '' ||
     !in_array($status, $status_valid, true)
 ) {
     die("Data tidak lengkap atau tidak valid.");
@@ -47,17 +45,16 @@ if (!$tanggal_obj || $tanggal_obj->format('Y-m-d') !== $tanggal) {
 // Update hanya catatan milik guru yang login
 $stmt = mysqli_prepare($koneksi, "
     UPDATE t_pelanggaran_siswa
-    SET tanggal = ?, keterangan = ?, tindakan = ?,
+    SET tanggal = ?, keterangan = ?,
         status = ?, updated_at = NOW()
     WHERE id = ? AND guru_id = ?
 ");
 
 mysqli_stmt_bind_param(
     $stmt,
-    "ssssii",
+    "sssii",
     $tanggal,
     $keterangan,
-    $tindakan,
     $status,
     $id,
     $guru_id
