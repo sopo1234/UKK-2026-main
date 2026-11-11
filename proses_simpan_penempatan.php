@@ -93,25 +93,6 @@ if (!$tahun_valid) {
     exit;
 }
 
-// Pastikan siswa belum ditempatkan pada tahun ajaran ini
-$stmt = mysqli_prepare(
-    $koneksi,
-    "SELECT id FROM t_kelas_siswa
-     WHERE siswa_id = ? AND tahun_ajaran_id = ? LIMIT 1"
-);
-mysqli_stmt_bind_param($stmt, "ii", $siswa_id, $tahun_ajaran_id);
-mysqli_stmt_execute($stmt);
-mysqli_stmt_store_result($stmt);
-
-$sudah_ditempatkan = mysqli_stmt_num_rows($stmt) > 0;
-mysqli_stmt_close($stmt);
-
-if ($sudah_ditempatkan) {
-    $_SESSION['pesan_error'] = "Siswa sudah ditempatkan pada tahun ajaran tersebut.";
-    header("Location: penempatan_siswa.php");
-    exit;
-}
-
 // Pastikan kelas tersedia dan aktif
 $stmt = mysqli_prepare(
     $koneksi,
@@ -127,6 +108,27 @@ mysqli_stmt_close($stmt);
 
 if (!$kelas_valid) {
     $_SESSION['pesan_error'] = "Kelas tidak ditemukan atau tidak aktif.";
+    header("Location: penempatan_siswa.php");
+    exit;
+}
+
+// Cegah duplikat: satu siswa hanya boleh satu penempatan per tahun ajaran
+$stmt = mysqli_prepare(
+    $koneksi,
+    "SELECT id FROM t_kelas_siswa
+     WHERE siswa_id = ? AND tahun_ajaran_id = ?"
+);
+mysqli_stmt_bind_param($stmt, "ii", $siswa_id, $tahun_ajaran_id);
+mysqli_stmt_execute($stmt);
+mysqli_stmt_store_result($stmt);
+
+$sudah_ditempatkan = mysqli_stmt_num_rows($stmt) > 0;
+mysqli_stmt_close($stmt);
+
+if ($sudah_ditempatkan) {
+    $_SESSION['pesan_error'] =
+        "Siswa ini sudah memiliki penempatan pada tahun ajaran tersebut. " .
+        "Gunakan hapus atau ubah penempatan yang ada terlebih dahulu.";
     header("Location: penempatan_siswa.php");
     exit;
 }
@@ -162,11 +164,21 @@ mysqli_stmt_bind_param(
     $status_aktif
 );
 
-if (mysqli_stmt_execute($stmt)) {
-    $_SESSION['pesan_sukses'] = "Penempatan siswa berhasil disimpan.";
-} else {
-    $_SESSION['pesan_error'] =
-        "Gagal menyimpan penempatan siswa: " . mysqli_stmt_error($stmt);
+try {
+    if (mysqli_stmt_execute($stmt)) {
+        $_SESSION['pesan_sukses'] = "Penempatan siswa berhasil disimpan.";
+    } else {
+        $_SESSION['pesan_error'] =
+            "Gagal menyimpan penempatan siswa: " . mysqli_stmt_error($stmt);
+    }
+} catch (mysqli_sql_exception $e) {
+    if ((int)($e->getCode()) === 1062) {
+        $_SESSION['pesan_error'] =
+            "Siswa ini sudah memiliki penempatan pada tahun ajaran tersebut.";
+    } else {
+        $_SESSION['pesan_error'] =
+            "Gagal menyimpan penempatan siswa: " . $e->getMessage();
+    }
 }
 
 mysqli_stmt_close($stmt);

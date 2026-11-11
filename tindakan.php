@@ -4,16 +4,23 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// Hanya guru yang boleh akses
-if (($_SESSION['role'] ?? '') != 'guru') {
-    header("Location: dashboard.php");
-    exit;
-}
-
 function e($nilai)
 {
     return htmlspecialchars((string)($nilai ?? ''), ENT_QUOTES, 'UTF-8');
 }
+
+// Identitas guru yang login: hanya catatan miliknya yang tampil dan bisa ditindak
+$stmt = mysqli_prepare($koneksi, "SELECT id FROM t_guru WHERE user_id = ? LIMIT 1");
+mysqli_stmt_bind_param($stmt, "i", $_SESSION['id_user']);
+mysqli_stmt_execute($stmt);
+$g = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
+
+if (!$g) {
+    die("Data guru tidak ditemukan.");
+}
+
+$guru_id = (int) $g['id'];
 
 const STATUS_VALID = ['tercatat', 'ditindak', 'selesai'];
 
@@ -52,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = mysqli_prepare($koneksi, "
         UPDATE t_pelanggaran_siswa
         SET tindakan = ?, status = ?, updated_at = NOW()
-        WHERE id = ?
+        WHERE id = ? AND guru_id = ?
     ");
-    mysqli_stmt_bind_param($stmt, "ssi", $tindakan, $status, $id);
+    mysqli_stmt_bind_param($stmt, "ssii", $tindakan, $status, $id, $guru_id);
 
     if (!mysqli_stmt_execute($stmt)) {
         $err = mysqli_stmt_error($stmt);
@@ -78,6 +85,11 @@ $halaman       = max(1, (int) ($_GET['hal'] ?? 1));
 $where  = [];
 $tipe   = '';
 $param  = [];
+
+// Hanya catatan yang dibuat sendiri oleh guru yang login
+$where[] = 'guru_id = ?';
+$tipe   .= 'i';
+$param[] = $guru_id;
 
 if (in_array($status_filter, STATUS_VALID, true)) {
     $where[] = 'status = ?';
@@ -134,130 +146,138 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tindakan Pelanggaran</title>
 
-    <?php include 'layout/datatables_head.php'; ?>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="layout/layout.css">
+    <link rel="stylesheet" href="layout/tema.css">
+    <style>
+        /* Warna badge status mengikuti palet tema (teal) */
+        .text-bg-secondary {
+            background-color: #2f737d !important;
+            color: #f7f9f8 !important;
+        }
+    </style>
 </head>
 <body>
 
-<!-- SIDEBAR BERSAMA -->
-<?php include "layout/sidebar.php"; ?>
+<?php include 'layout/sidebar.php'; ?>
 
-<!-- KONTEN UTAMA -->
 <main class="app-main">
 
-    <div class="page-header">
-        <h1>Tindakan Pelanggaran</h1>
-        <p class="page-description">
-            Catat tindakan yang diberikan kepada siswa dan perbarui status penanganannya.
+                <div class="page-header">
+        <h1>Tindakan</h1>
+        <a href="dashboard.php">Kembali ke Dashboard</a>
+        <p class="mb-0 text-muted">
+            Tindakan hanya untuk catatan pelanggaran yang Anda catat sendiri.
         </p>
     </div>
 
-    <?php if ($flash): ?>
-        <div class="alert alert-<?= e($flash['tipe']) ?> alert-dismissible fade show">
-            <?= e($flash['pesan']) ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-    <?php endif; ?>
-
     <div class="table-card shadow-sm">
 
-        <form method="GET" action="tindakan.php" class="form-row mb-3">
-            <div class="form-group col-md-3">
-                <select name="status" class="form-control">
-                    <option value="belum_selesai" <?= $status_filter === 'belum_selesai' ? 'selected' : '' ?>>Belum selesai</option>
-                    <option value="tercatat" <?= $status_filter === 'tercatat' ? 'selected' : '' ?>>Tercatat (belum ditindak)</option>
-                    <option value="ditindak" <?= $status_filter === 'ditindak' ? 'selected' : '' ?>>Sedang ditindak</option>
-                    <option value="selesai" <?= $status_filter === 'selesai' ? 'selected' : '' ?>>Selesai</option>
-                    <option value="semua" <?= $status_filter === 'semua' ? 'selected' : '' ?>>Semua status</option>
-                </select>
-            </div>
-            <div class="form-group col-md-5">
-                <input type="text" name="q" value="<?= e($cari) ?>" class="form-control"
-                       placeholder="Cari nama siswa, kelas, atau pelanggaran...">
-            </div>
-            <div class="form-group col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Tampilkan</button>
-                <a href="tindakan.php" class="btn btn-secondary">Reset</a>
-            </div>
-        </form>
-
-        <div class="table-responsive">
-            <table id="tabelTindakan" class="table table-bordered table-striped table-hover table-sm align-middle">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Siswa</th>
-                        <th>Kelas</th>
-                        <th>Pelanggaran</th>
-                        <th>Poin</th>
-                        <th>Tindakan</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($total === 0): ?>
-                        <tr><td colspan="8" class="text-center text-muted">Tidak ada data.</td></tr>
-                    <?php endif; ?>
-
-                    <?php while ($r = mysqli_fetch_assoc($hasil)): ?>
-                        <tr>
-                            <td class="text-nowrap"><?= e($r['tanggal']) ?></td>
-                            <td><?= e($r['nama_siswa']) ?></td>
-                            <td><?= e($r['nama_kelas']) ?></td>
-                            <td>
-                                <?= e($r['nama_pelanggaran']) ?>
-                                <?php if ($r['keterangan'] !== ''): ?>
-                                    <div class="small text-muted"><?= e($r['keterangan']) ?></div>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= (int) $r['poin'] ?></td>
-                            <td><?= $r['tindakan'] !== '' ? e($r['tindakan']) : '<span class="text-muted">Belum ada</span>' ?></td>
-                            <td>
-                                <span class="badge badge-<?= $warna[$r['status']] ?? 'secondary' ?>">
-                                    <?= e(ucfirst($r['status'])) ?>
-                                </span>
-                            </td>
-                            <td class="text-nowrap">
-                                <button type="button" class="btn btn-sm btn-primary btn-tindakan"
-                                        data-toggle="modal" data-target="#modalTindakan"
-                                        data-id="<?= (int) $r['id'] ?>"
-                                        data-siswa="<?= e($r['nama_siswa']) ?>"
-                                        data-pelanggaran="<?= e($r['nama_pelanggaran']) ?>"
-                                        data-tindakan="<?= e($r['tindakan']) ?>"
-                                        data-status="<?= e($r['status']) ?>">
-                                    Beri Tindakan
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
-            <small class="text-muted"><?= $total ?> data — halaman <?= $halaman ?> dari <?= $total_halaman ?></small>
-
-            <?php if ($total_halaman > 1): ?>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item <?= $halaman <= 1 ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman - 1 ?>">&laquo;</a>
-                        </li>
-                        <li class="page-item disabled"><span class="page-link"><?= $halaman ?> / <?= $total_halaman ?></span></li>
-                        <li class="page-item <?= $halaman >= $total_halaman ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman + 1 ?>">&raquo;</a>
-                        </li>
-                    </ul>
-                </nav>
+            <?php if ($flash): ?>
+                <div class="alert alert-<?= e($flash['tipe']) ?> alert-dismissible fade show">
+                    <?= e($flash['pesan']) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             <?php endif; ?>
-        </div>
-    </div>
+
+            <form method="GET" action="tindakan.php" class="row g-2 mb-3">
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="belum_selesai" <?= $status_filter === 'belum_selesai' ? 'selected' : '' ?>>Belum selesai</option>
+                            <option value="tercatat" <?= $status_filter === 'tercatat' ? 'selected' : '' ?>>Tercatat (belum ditindak)</option>
+                            <option value="ditindak" <?= $status_filter === 'ditindak' ? 'selected' : '' ?>>Sedang ditindak</option>
+                            <option value="selesai" <?= $status_filter === 'selesai' ? 'selected' : '' ?>>Selesai</option>
+                            <option value="semua" <?= $status_filter === 'semua' ? 'selected' : '' ?>>Semua status</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="q" value="<?= e($cari) ?>" class="form-control"
+                               placeholder="Cari nama siswa, kelas, atau pelanggaran...">
+                    </div>
+                    <div class="col-md-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Tampilkan</button>
+                        <a href="tindakan.php" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Siswa</th>
+                                <th>Kelas</th>
+                                <th>Pelanggaran</th>
+                                <th>Poin</th>
+                                <th>Tindakan</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($total === 0): ?>
+                                <tr><td colspan="8" class="text-center text-muted">Tidak ada data.</td></tr>
+                            <?php endif; ?>
+
+                            <?php while ($r = mysqli_fetch_assoc($hasil)): ?>
+                                <tr>
+                                    <td class="text-nowrap"><?= e($r['tanggal']) ?></td>
+                                    <td><?= e($r['nama_siswa']) ?></td>
+                                    <td><?= e($r['nama_kelas']) ?></td>
+                                    <td>
+                                        <?= e($r['nama_pelanggaran']) ?>
+                                        <?php if ($r['keterangan'] !== ''): ?>
+                                            <div class="small text-muted"><?= e($r['keterangan']) ?></div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= (int) $r['poin'] ?></td>
+                                    <td><?= $r['tindakan'] !== '' ? e($r['tindakan']) : '<span class="text-muted">Belum ada</span>' ?></td>
+                                    <td>
+                                        <span class="badge text-bg-<?= $warna[$r['status']] ?? 'secondary' ?>">
+                                            <?= e(ucfirst($r['status'])) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <button type="button" class="btn btn-sm btn-primary btn-tindakan"
+                                                data-bs-toggle="modal" data-bs-target="#modalTindakan"
+                                                data-id="<?= (int) $r['id'] ?>"
+                                                data-siswa="<?= e($r['nama_siswa']) ?>"
+                                                data-pelanggaran="<?= e($r['nama_pelanggaran']) ?>"
+                                                data-tindakan="<?= e($r['tindakan']) ?>"
+                                                data-status="<?= e($r['status']) ?>">
+                                            Beri Tindakan
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <small class="text-muted"><?= $total ?> data — halaman <?= $halaman ?> dari <?= $total_halaman ?></small>
+
+                    <?php if ($total_halaman > 1): ?>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item <?= $halaman <= 1 ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman - 1 ?>">&laquo;</a>
+                                </li>
+                                <li class="page-item disabled"><span class="page-link"><?= $halaman ?> / <?= $total_halaman ?></span></li>
+                                <li class="page-item <?= $halaman >= $total_halaman ? 'disabled' : '' ?>">
+                                    <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman + 1 ?>">&raquo;</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    <?php endif; ?>
+                </div>
+            </div>
 
 </main>
 
 <!-- MODAL BERI TINDAKAN -->
-<div class="modal fade" id="modalTindakan" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="modalTindakan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
         <form method="POST" action="tindakan.php" class="modal-content">
             <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
             <input type="hidden" name="id" id="modal_id">
@@ -265,9 +285,7 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
 
             <div class="modal-header">
                 <h5 class="modal-title">Beri Tindakan</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -276,15 +294,15 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
                     <span class="text-muted" id="modal_pelanggaran"></span>
                 </p>
 
-                <div class="form-group">
-                    <label for="modal_tindakan">Tindakan</label>
+                <div class="mb-3">
+                    <label class="form-label" for="modal_tindakan">Tindakan</label>
                     <textarea name="tindakan" id="modal_tindakan" rows="3" class="form-control"
                               placeholder="Contoh: Teguran lisan, pemanggilan orang tua, pembinaan wali kelas"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="modal_status">Status</label>
-                    <select name="status" id="modal_status" class="form-control" required>
+                <div>
+                    <label class="form-label" for="modal_status">Status</label>
+                    <select name="status" id="modal_status" class="form-select" required>
                         <option value="tercatat">Tercatat (belum ditindak)</option>
                         <option value="ditindak">Sedang ditindak</option>
                         <option value="selesai">Selesai</option>
@@ -293,15 +311,14 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
         </form>
     </div>
 </div>
 
-<?php include 'layout/datatables_bottom.php'; ?>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.querySelectorAll('.btn-tindakan').forEach(function (tombol) {
     tombol.addEventListener('click', function () {
@@ -313,6 +330,5 @@ document.querySelectorAll('.btn-tindakan').forEach(function (tombol) {
     });
 });
 </script>
-
 </body>
 </html>

@@ -46,6 +46,22 @@ if (!$hasil) {
     </div>
     <!-- /page-header -->
 
+    <!-- PESAN SUKSES -->
+    <?php if (isset($_SESSION['pesan_sukses'])): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($_SESSION['pesan_sukses']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_sukses']); ?>
+    <?php endif; ?>
+
+    <!-- PESAN ERROR -->
+    <?php if (isset($_SESSION['pesan_error'])): ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($_SESSION['pesan_error']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_error']); ?>
+    <?php endif; ?>
+
     <!-- FORM TAMBAH TAHUN AJARAN (dipindah dari tambah_tahun_ajaran.php) -->
     <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Tahun Ajaran Baru</h5>

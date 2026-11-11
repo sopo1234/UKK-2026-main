@@ -5,13 +5,7 @@ if ($_SESSION['role'] != "admin" && $_SESSION['role'] != "guru") {
     echo "<h1>Akses Ditolak!</h1>"; exit;
 }
 ?>
-<!DOCTYPE html><html lang="id"><head><title>Menu 3</title>
-<style>
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%); color:#14532d; padding:30px; }
-    a { color:#166534; }
-    a:hover { color:#14532d; }
-</style>
-</head><body>
+<!DOCTYPE html><html><head><title>Menu 3</title></head><body>
 <h1>Menu 3</h1><p>Menu 3 dapat diakses oleh Admin dan Guru.</p>
 <a href="dashboard.php">Kembali ke Dashboard</a>
 </body></html>

@@ -1,0 +1,120 @@
+/* ===============================================
+   TEMA: Teal on Paper (taste-skill deal, 2.5.0)
+   bg #f7f9f8 | surface #ebf0ee | ink/action #06525c
+   Hanya mengubah warna & huruf — layout tidak diubah.
+   Muat file ini SETELAH layout.css.
+   =============================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400..700&display=swap');
+
+:root {
+    --t-bg: #f7f9f8;
+    --t-surface: #ebf0ee;
+    --t-ink: #06525c;
+    --t-muted: #2f737d;
+    --t-surface-inv: #205d66;
+    --t-ink-inv: #f7f9f8;
+}
+
+/* Latar halaman dan huruf */
+html,
+body {
+    background: #f7f9f8;
+}
+
+body {
+    font-family: 'Host Grotesk', Arial, sans-serif;
+    --bs-link-color: #06525c;
+    --bs-link-hover-color: #0b6b76;
+}
+
+.app-main {
+    background: #f7f9f8;
+}
+
+/* Sidebar: teal gelap dari sisi inversi palet */
+.app-sidebar {
+    background: #06525c;
+}
+
+.app-sidebar nav a:hover {
+    background: #205d66;
+}
+
+.app-sidebar nav a.active {
+    background: #f7f9f8;
+    color: #06525c;
+}
+
+.app-sidebar nav a.logout {
+    color: #ff7a84;
+}
+
+.app-sidebar nav hr {
+    border-top-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Tombol utama Bootstrap (btn-primary) menjadi teal.
+   Var tersuai untuk Bootstrap 5; properti eksplisit di bawah juga
+   menutup halaman yang memakai Bootstrap 4. */
+.btn-primary {
+    background-color: #06525c;
+    border-color: #06525c;
+    --bs-btn-bg: #06525c;
+    --bs-btn-border-color: #06525c;
+    --bs-btn-hover-bg: #0b6b76;
+    --bs-btn-hover-border-color: #0b6b76;
+    --bs-btn-active-bg: #205d66;
+    --bs-btn-active-border-color: #205d66;
+    --bs-btn-disabled-bg: #06525c;
+    --bs-btn-disabled-border-color: #06525c;
+    --bs-btn-focus-shadow-rgb: 6, 82, 92;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #0b6b76;
+    border-color: #0b6b76;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active {
+    background-color: #205d66;
+    border-color: #205d66;
+}
+
+.btn-outline-primary {
+    color: #06525c;
+    border-color: #06525c;
+    --bs-btn-color: #06525c;
+    --bs-btn-border-color: #06525c;
+    --bs-btn-hover-bg: #06525c;
+    --bs-btn-hover-border-color: #06525c;
+    --bs-btn-active-bg: #205d66;
+    --bs-btn-active-border-color: #205d66;
+    --bs-btn-focus-shadow-rgb: 6, 82, 92;
+}
+
+/* Header tabel gelap menjadi teal */
+.table-dark {
+    background-color: #06525c;
+    color: #f7f9f8;
+    --bs-table-bg: #06525c;
+    --bs-table-color: #f7f9f8;
+}
+
+/* Alert info sesuai palet */
+.alert-info {
+    background-color: #ebf0ee;
+    border-color: #cfdedd;
+    color: #06525c;
+    --bs-alert-bg: #ebf0ee;
+    --bs-alert-border-color: #cfdedd;
+    --bs-alert-color: #06525c;
+}
+
+/* Fokus form kontrol teal */
+.form-control:focus,
+.form-select:focus {
+    border-color: #06525c;
+    box-shadow: 0 0 0 0.2rem rgba(6, 82, 92, 0.25);
+}

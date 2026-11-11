@@ -8,42 +8,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'guru') {
     exit;
 }
 
-// Rekap total poin pelanggaran per siswa dikelas aktif.
-// Wali kelas hanya melihat rekap dari kelas yang diampu.
-include 'includes/wali_kelas.php';
-$wali = cari_wali_kelas($koneksi, (int)($_SESSION['id_user'] ?? 0));
-
-if ($wali) {
-    $stmt = mysqli_prepare($koneksi, "
-        SELECT s.id, s.nama,
-               COALESCE(k.nama, '-') AS nama_kelas,
-               COALESCE(SUM(ps.poin), 0) AS total_poin
-        FROM t_siswa s
-        INNER JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
-        INNER JOIN t_kelas k ON k.id = ks.kelas_id
-        LEFT JOIN t_pelanggaran_siswa ps ON ps.siswa_id = s.id
-        WHERE s.status_aktif = 1
-          AND ks.kelas_id = ?
-        GROUP BY s.id, s.nama, k.nama
-        ORDER BY total_poin DESC, s.nama
-    ");
-    mysqli_stmt_bind_param($stmt, "i", $wali['kelas_id']);
-    mysqli_stmt_execute($stmt);
-    $rekap = mysqli_stmt_get_result($stmt);
-} else {
-    $rekap = mysqli_query($koneksi, "
-        SELECT s.id, s.nama,
-               COALESCE(k.nama, '-') AS nama_kelas,
-               COALESCE(SUM(ps.poin), 0) AS total_poin
-        FROM t_siswa s
-        LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
-        LEFT JOIN t_kelas k ON k.id = ks.kelas_id
-        LEFT JOIN t_pelanggaran_siswa ps ON ps.siswa_id = s.id
-        WHERE s.status_aktif = 1
-        GROUP BY s.id, s.nama, k.nama
-        ORDER BY total_poin DESC, s.nama
-    ");
-}
+// Rekap total poin pelanggaran per siswa dikelas aktif
+$rekap = mysqli_query($koneksi, "
+    SELECT s.id, s.nama,
+           COALESCE(k.nama, '-') AS nama_kelas,
+           COALESCE(SUM(ps.poin), 0) AS total_poin
+    FROM t_siswa s
+    LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
+    LEFT JOIN t_kelas k ON k.id = ks.kelas_id
+    LEFT JOIN t_pelanggaran_siswa ps ON ps.siswa_id = s.id
+    WHERE s.status_aktif = 1
+    GROUP BY s.id, s.nama, k.nama
+    ORDER BY total_poin DESC, s.nama
+");
 
 if (!$rekap) {
     die("Gagal mengambil rekap poin: " . mysqli_error($koneksi));

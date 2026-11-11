@@ -51,23 +51,22 @@ if (isset($_POST['update'])) {
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            color: #14532d;
+            background-color: #f4f6f9;
+            color: #333;
         }
         .container {
             max-width: 500px;
             background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(22, 163, 74, 0.15);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         h2 {
             margin-top: 0;
-            color: #14532d;
         }
         hr {
             border: 0;
-            border-top: 1px solid #dcfce7;
+            border-top: 1px solid #dee2e6;
             margin-bottom: 20px;
         }
         .form-group {
@@ -81,28 +80,23 @@ if (isset($_POST['update'])) {
         input[type="text"] {
             width: 100%;
             padding: 8px 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
             box-sizing: border-box;
-            outline: none;
-        }
-        input[type="text"]:focus {
-            border-color: #16a34a;
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
         }
         button {
             padding: 10px 20px;
-            background-color: #16a34a;
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #14532d;
+            background-color: #218838;
         }
         a {
-            color: #166534;
+            color: #007bff;
             text-decoration: none;
             margin-left: 10px;
         }

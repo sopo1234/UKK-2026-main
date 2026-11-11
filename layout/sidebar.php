@@ -23,7 +23,7 @@ $menuAdmin = [
     'kelola_walikelas.php' => 'Data Wali Kelas',
     'penempatan_siswa.php' => 'Penempatan Siswa',
     'kelola_pelanggaran_kategori.php' => 'Kategori Pelanggaran',
-    'kelola_pelanggaran.php' => 'Data Pelanggaran',
+    'kelola_pelanggaran.php' => 'Jenis Pelanggaran',
     'about_me.php' => 'About Me'
 ];
 
@@ -34,6 +34,7 @@ $menuGuru = [
     'tindakan.php' => 'Tindakan',
     'riwayat.php' => 'Riwayat',
     'rekap_poin.php' => 'Rekap Poin',
+    'laporan_pelanggaran.php' => 'Laporan',
     'about_me.php' => 'About Me'
 ];
 
@@ -46,6 +47,7 @@ if ($role === 'admin') {
 ?>
 
 <link rel="stylesheet" href="layout/layout.css">
+<link rel="stylesheet" href="layout/tema.css">
 
 <aside class="app-sidebar">
     <h4>Pelanggaran Siswa</h4>

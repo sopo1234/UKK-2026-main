@@ -24,20 +24,10 @@ if (!isset($_POST['edit'])) {
 
 // AMBIL DATA
 $id = $_POST['id'];
-$nip = trim($_POST['nip']);
+$nip = $_POST['nip'];
 $nama = $_POST['nama'];
 $email = $_POST['email'];
 $status_aktif = $_POST['status_aktif'];
-$password = $_POST['password'] ?? '';
-$konfirmasi_password = $_POST['konfirmasi_password'] ?? '';
-
-if (!ctype_digit($nip) || strlen($nip) > 18) {
-    die("NIP maksimal 18 digit dan hanya angka.");
-}
-
-if ($password !== '' && $password !== $konfirmasi_password) {
-    die("Password dan konfirmasi password tidak sama.");
-}
 
 
 // ============================
@@ -100,17 +90,7 @@ $sql_user = "UPDATE t_users
              SET
                 name='$nama',
                 email='$email',
-                updated_at=CURRENT_TIMESTAMP";
-
-if ($password !== '') {
-    $password_hash = mysqli_real_escape_string(
-        $koneksi,
-        password_hash($password, PASSWORD_DEFAULT)
-    );
-    $sql_user .= ", password='$password_hash'";
-}
-
-$sql_user .= "
+                updated_at=CURRENT_TIMESTAMP
              WHERE id='$user_id'
              AND role='guru'";
 

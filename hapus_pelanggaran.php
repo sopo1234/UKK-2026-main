@@ -20,16 +20,21 @@ $stmt = mysqli_prepare($koneksi, "SELECT id FROM t_guru WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt, "i", $user_id);
 mysqli_stmt_execute($stmt);
 $guru = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+mysqli_stmt_close($stmt);
 
 if (!$guru) {
-    die("Data guru tidak ditemukan.");
+    $_SESSION['pesan_error'] = "Data guru tidak ditemukan.";
+    header("Location: catatan_pelanggaran.php");
+    exit;
 }
 
 $guru_id = (int)$guru['id'];
 $id = (int)($_POST['id'] ?? 0);
 
 if ($id <= 0) {
-    die("ID catatan tidak valid.");
+    $_SESSION['pesan_error'] = "ID catatan tidak valid.";
+    header("Location: catatan_pelanggaran.php");
+    exit;
 }
 
 // Hapus catatan milik guru yang sedang login
@@ -39,14 +44,19 @@ $stmt = mysqli_prepare($koneksi, "
 ");
 mysqli_stmt_bind_param($stmt, "ii", $id, $guru_id);
 
-if (mysqli_stmt_execute($stmt)) {
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
-        header("Location: catatan_pelanggaran.php?pesan=" . urlencode("Catatan berhasil dihapus."));
-        exit;
-    }
+try {
+    mysqli_stmt_execute($stmt);
 
-    die("Catatan tidak ditemukan atau bukan milik akun kamu.");
+    if (mysqli_stmt_affected_rows($stmt) > 0) {
+        $_SESSION['pesan_sukses'] = "Catatan berhasil dihapus.";
+    } else {
+        $_SESSION['pesan_error'] = "Catatan tidak ditemukan atau bukan milik Anda.";
+    }
+} catch (mysqli_sql_exception $e) {
+    $_SESSION['pesan_error'] = "Gagal menghapus catatan: " . $e->getMessage();
 }
 
-die("Gagal menghapus catatan: " . mysqli_stmt_error($stmt));
-?>
+mysqli_stmt_close($stmt);
+
+header("Location: catatan_pelanggaran.php");
+exit;

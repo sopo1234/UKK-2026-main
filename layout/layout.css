@@ -1,19 +1,11 @@
 /* ===============================================
-   TEMA HIJAU - PUTIH (palette identik login.php)
+   LAYOUT BERSAMA - UKK 2026
+   Sumber tunggal gaya sidebar + konten utama.
+   Semua halaman admin/guru memakai file ini.
    =============================================== */
-:root {
-    --green-50: #f0fdf4;
-    --green-100: #dcfce7;
-    --green-600: #16a34a;
-    --green-700: #14532d;
-    --green-800: #166534;
-    --white: #ffffff;
-    --shadow-green: rgba(22, 163, 74, 0.18);
-    --shadow-green-light: rgba(22, 163, 74, 0.12);
-    --shadow-green-focus: rgba(22, 163, 74, 0.15);
-    --error-bg: #fee2e2;
-    --error-border: #fecaca;
-    --error-text: #7f1d1d;
+
+* {
+    box-sizing: border-box;
 }
 
 html,
@@ -22,7 +14,7 @@ body {
     padding: 0;
     min-height: 100vh;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%);
+    background: #f5f7f9;
 }
 
 /* Sidebar */
@@ -36,12 +28,12 @@ body {
     padding: 20px 14px;
     overflow-y: auto;
     overflow-x: hidden;
-    background: var(--green-700);
+    background: #343a40;
     z-index: 1000;
 }
 
 .app-sidebar h4 {
-    color: var(--white);
+    color: #ffffff;
     font-size: 21px;
     font-weight: bold;
     margin: 0 0 24px;
@@ -58,26 +50,26 @@ body {
     width: 100%;
     padding: 11px 14px;
     margin-bottom: 6px;
-    color: var(--white);
+    color: #ffffff;
     font-size: 14px;
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: 4px;
 }
 
 .app-sidebar nav a:hover {
-    background: var(--green-800);
-    color: var(--white);
+    background: #495057;
+    color: #ffffff;
 }
 
 .app-sidebar nav a.active {
-    background: var(--green-600);
-    color: var(--white);
+    background: #0d6efd;
+    color: #ffffff;
 }
 
 .app-sidebar nav hr {
     width: 100%;
     border: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid #777777;
     margin: 15px 0;
 }
 
@@ -87,7 +79,7 @@ body {
 }
 
 .app-sidebar nav a.logout:hover {
-    background: var(--green-800);
+    background: #495057;
 }
 
 /* Konten utama */
@@ -103,7 +95,6 @@ body {
 .app-main h1,
 .app-main h2 {
     margin-top: 0;
-    color: var(--green-700);
 }
 
 .app-main .table-responsive {
@@ -118,16 +109,14 @@ body {
 .page-header h1 {
     font-size: 28px;
     margin-bottom: 12px;
-    color: var(--green-700);
 }
 
 /* Kartu pembungkus tabel */
 .table-card {
-    background: var(--white);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 8px;
     padding: 20px;
     width: 100%;
-    box-shadow: 0 6px 24px var(--shadow-green-light);
 }
 
 /* Kolom aksi pada tabel */
@@ -138,11 +127,10 @@ body {
 
 /* Form umum (halaman tambah/edit) */
 .form-card {
-    background: var(--white);
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 8px;
     padding: 25px;
     max-width: 720px;
-    box-shadow: 0 6px 24px var(--shadow-green-light);
 }
 
 /* Form full-width (penuh layar) */
@@ -152,10 +140,9 @@ body {
 
 .form-card label {
     display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin: 12px 0 6px;
-    color: var(--green-700);
+    font-size: 13px;
+    margin: 12px 0 5px;
+    color: #333;
 }
 
 .form-card input[type="text"],
@@ -166,51 +153,23 @@ body {
 .form-card select,
 .form-card textarea {
     width: 100%;
-    height: 42px;
-    padding: 0 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    padding: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
     font-size: 14px;
     box-sizing: border-box;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    background-color: var(--white);
-}
-
-.form-card input[type="text"]:focus,
-.form-card input[type="email"]:focus,
-.form-card input[type="password"]:focus,
-.form-card input[type="date"]:focus,
-.form-card input[type="number"]:focus,
-.form-card select:focus,
-.form-card textarea:focus {
-    border-color: var(--green-600);
-    box-shadow: 0 0 0 3px var(--shadow-green-focus);
 }
 
 .form-card textarea {
-    height: auto;
-    min-height: 80px;
-    padding: 10px 14px;
     resize: vertical;
 }
 
-.form-card button:not([class*="btn-"]) {
-    width: 100%;
-    height: 42px;
+.form-card button {
     margin-top: 18px;
+    padding: 8px 18px;
     border: none;
-    border-radius: 8px;
-    background-color: var(--green-600);
-    color: var(--white);
-    font-size: 15px;
-    font-weight: bold;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.form-card button:not([class*="btn-"]):hover {
-    background-color: var(--green-700);
 }
 
 /* Tampilan layar kecil */
@@ -236,170 +195,3 @@ body {
         max-width: 100%;
     }
 }
-
-/* ===============================================
-   OVERRIDE BOOTSTRAP 4 - palette identik login.php
-   =============================================== */
-
-/* Link default */
-a {
-    color: var(--green-800);
-}
-
-a:hover,
-a:focus {
-    color: var(--green-700);
-}
-
-/* Tombol utama (Simpan/tambah) solid hijau */
-.btn-primary {
-    background-color: var(--green-600);
-    border-color: var(--green-600);
-    color: var(--white);
-    border-radius: 8px;
-}
-
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active,
-.btn-primary:not(:disabled):not(.disabled):active {
-    background-color: var(--green-700);
-    border-color: var(--green-700);
-}
-
-/* Tombol kedua / kembali / edit / info: outline hijau */
-.btn-secondary,
-.btn-warning,
-.btn-info {
-    background-color: var(--white);
-    border-color: var(--green-600);
-    color: var(--green-600);
-    border-radius: 8px;
-}
-
-.btn-secondary:hover,
-.btn-secondary:focus,
-.btn-warning:hover,
-.btn-warning:focus,
-.btn-info:hover,
-.btn-info:focus,
-.btn-secondary:active,
-.btn-warning:active,
-.btn-info:active {
-    background-color: var(--green-100);
-    border-color: var(--green-700);
-    color: var(--green-700);
-}
-
-/* Tombol outline bawaan Bootstrap */
-.btn-outline-primary {
-    border-color: var(--green-600);
-    color: var(--green-600);
-    border-radius: 8px;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--green-600);
-    border-color: var(--green-600);
-    color: var(--white);
-}
-
-/* Kepala tabel gelap jadi hijau tua */
-.table thead .thead-dark th,
-thead.thead-dark th,
-.thead-dark th {
-    background-color: var(--green-700);
-    border-color: var(--green-800);
-    color: var(--white);
-}
-
-/* Kepala tabel terang */
-.thead-light th {
-    background-color: var(--green-100);
-    border-color: #bbf7d0;
-    color: var(--green-700);
-}
-
-/* Baris tabel */
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(22, 163, 74, 0.03);
-}
-
-.table-hover tbody tr:hover {
-    background-color: var(--green-50);
-}
-
-/* DataTables pagination */
-.page-item.active .page-link {
-    background-color: var(--green-600);
-    border-color: var(--green-600);
-}
-
-.page-link {
-    color: var(--green-800);
-}
-
-.page-item.disabled .page-link,
-.page-link:focus {
-    color: #6b7280;
-}
-
-/* Alert info hijau muda */
-.alert-info {
-    background-color: var(--green-100);
-    border-color: #bbf7d0;
-    color: var(--green-700);
-    border-radius: 8px;
-}
-
-/* Alert danger (error) - mirip login.php */
-.alert-danger {
-    background-color: var(--error-bg);
-    border-color: var(--error-border);
-    color: var(--error-text);
-    border-radius: 8px;
-}
-
-/* Alert success */
-.alert-success {
-    background-color: var(--green-100);
-    border-color: #bbf7d0;
-    color: var(--green-700);
-    border-radius: 8px;
-}
-
-/* Badge sukses */
-.badge-success {
-    background-color: var(--green-600);
-}
-
-/* Badge secondary (tidak aktif) */
-.badge-secondary {
-    background-color: #6b7280;
-}
-
-/* Card shadow */
-.card {
-    border-radius: 12px;
-    border: none;
-    box-shadow: 0 6px 24px var(--shadow-green-light);
-}
-
-/* Form control bootstrap */
-.form-control {
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 8px 12px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-control:focus {
-    border-color: var(--green-600);
-    box-shadow: 0 0 0 3px var(--shadow-green-focus);
-}
-
-/* Select bootstrap */
-select.form-control {
-    height: 42px;
-}
-

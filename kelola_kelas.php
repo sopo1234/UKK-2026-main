@@ -12,20 +12,16 @@ $role = strtolower($_SESSION['role'] ?? '');
 if ($role !== 'admin') 
     exit("Akses ditolak!");
 
-// AMBIL DATA KELAS SISWA
+// AMBIL DATA KELAS (semua kelas yang pernah dibuat)
 $sql = "SELECT
-            ks.*,
-            s.nama AS nama_siswa,
-            k.nama AS nama_kelas,
-            k.tingkat,
-            k.jurusan,
-            ta.nama AS tahun_ajaran
-        FROM t_kelas_siswa ks
-        LEFT JOIN t_siswa s ON ks.siswa_id = s.id
-        LEFT JOIN t_kelas k ON ks.kelas_id = k.id
-        LEFT JOIN t_tahun_ajaran ta
-            ON ks.tahun_ajaran_id = ta.id
-        ORDER BY ks.id DESC";
+            id,
+            nama,
+            tingkat,
+            jurusan,
+            status_aktif,
+            created_at
+        FROM t_kelas
+        ORDER BY id ASC";
 
 $hasil = mysqli_query($koneksi, $sql);
 
@@ -40,7 +36,7 @@ if (!$hasil) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kelola Kelas Siswa</title>
+    <title>Kelola Kelas</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet"
@@ -74,10 +70,26 @@ if (!$hasil) {
 <main class="app-main">
 
     <div class="page-header">
-        <h1>Kelola Kelas Siswa</h1>
+        <h1>Kelola Kelas</h1>
 
         <a href="dashboard.php">Kembali ke Dashboard</a>
     </div>
+
+    <!-- PESAN SUKSES -->
+    <?php if (isset($_SESSION['pesan_sukses'])): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($_SESSION['pesan_sukses']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_sukses']); ?>
+    <?php endif; ?>
+
+    <!-- PESAN ERROR -->
+    <?php if (isset($_SESSION['pesan_error'])): ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($_SESSION['pesan_error']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_error']); ?>
+    <?php endif; ?>
 
     <!-- FORM 1: TAMBAH KELAS BARU (dipindah dari tambah_kelas.php) -->
     <div class="form-card form-card-full shadow-sm mb-4">
@@ -99,14 +111,8 @@ if (!$hasil) {
 
                 <div class="form-group col-md-3">
                     <label>Jurusan</label>
-                    <select name="jurusan" class="form-control" required>
-                        <option value="">-- Pilih Jurusan --</option>
-                        <option value="RPL">RPL</option>
-                        <option value="TKJ">TKJ</option>
-                        <option value="BD">BD</option>
-                        <option value="TKR">TKR</option>
-                        <option value="TSM">TSM</option>
-                    </select>
+                    <input type="text" name="jurusan" class="form-control"
+                           required placeholder="Contoh: RPL">
                 </div>
 
                 <div class="form-group col-md-3">
@@ -124,101 +130,74 @@ if (!$hasil) {
         </form>
     </div>
 
-    <div class="table-card shadow-sm">
+            <div class="table-card shadow-sm">
 
-        <h5 class="mb-3">Daftar Penempatan Siswa</h5>
+                <div class="table-responsive">
 
-        <div class="table-responsive">
+                    <table id="tabelKelas"
+                       class="table table-striped table-bordered table-hover table-sm">
 
-            <table id="tabelKelas"
-                   class="table table-striped table-bordered table-hover table-sm">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Kelas</th>
+                            <th>Tingkat</th>
+                            <th>Jurusan</th>
+                            <th>Status</th>
+                            <th>Dibuat</th>
+                        </tr>
+                    </thead>
 
-                <thead class="thead-dark">
-                    <tr>
-                        <th>No</th>
-                        <th>Nama Siswa</th>
-                        <th>Kelas</th>
-                        <th>Tahun Ajaran</th>
-                        <th>Tanggal Mulai</th>
-                        <th>Tanggal Selesai</th>
-                        <th>Status</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
+                    <tbody>
 
-                <tbody>
+                    <?php
+                    $no = 1;
 
-                <?php
-                $no = 1;
+                    while ($data = mysqli_fetch_assoc($hasil)) {
+                    ?>
 
-                while ($data = mysqli_fetch_assoc($hasil)) {
-                ?>
+                        <tr>
 
-                    <tr>
+                            <td><?= $no++; ?></td>
 
-                        <td><?= $no++; ?></td>
+                            <td>
+                                <?= htmlspecialchars($data['nama'] ?? '-'); ?>
+                            </td>
 
-                        <td>
-                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                        </td>
+                            <td>
+                                <?= htmlspecialchars($data['tingkat'] ?? '-'); ?>
+                            </td>
 
-                        <td>
-                            <?= htmlspecialchars(
-                                ($data['nama_kelas'] ?? '-') . ' - ' .
-                                ($data['tingkat'] ?? '-') . ' ' .
-                                ($data['jurusan'] ?? '')
-                            ); ?>
-                        </td>
+                            <td>
+                                <?= htmlspecialchars($data['jurusan'] ?? '-'); ?>
+                            </td>
 
-                        <td>
-                            <?= htmlspecialchars($data['tahun_ajaran'] ?? '-'); ?>
-                        </td>
+                            <td>
+                                <?php if ((int)($data['status_aktif'] ?? 0) === 1) { ?>
+                                    <span class="badge badge-success">Aktif</span>
+                                <?php } else { ?>
+                                    <span class="badge badge-secondary">Tidak Aktif</span>
+                                <?php } ?>
+                            </td>
 
-                        <td>
-                            <?= htmlspecialchars($data['tanggal_mulai'] ?? '-'); ?>
-                        </td>
+                            <td>
+                                <?= htmlspecialchars($data['created_at'] ?? '-'); ?>
+                            </td>
 
-                        <td>
-                            <?= htmlspecialchars($data['tanggal_selesai'] ?? '-'); ?>
-                        </td>
+                        </tr>
 
-                        <td>
-                            <?php if ((int)($data['status_aktif'] ?? 0) === 1) { ?>
-                                <span class="badge badge-success">Aktif</span>
-                            <?php } else { ?>
-                                <span class="badge badge-secondary">Tidak Aktif</span>
-                            <?php } ?>
-                        </td>
+                    <?php
+                    }
+                    ?>
 
-                        <td>
-                            <div class="aksi">
-                                <a href="edit_kelas.php?id=<?= (int)$data['id']; ?>"
-                                   class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
+                    </tbody>
 
-                                <a href="hapus_kelas_siswa.php?id=<?= (int)$data['id']; ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus penempatan siswa ini?')">
-                                    Hapus
-                                </a>
-                            </div>
-                        </td>
+                </table>
 
-                    </tr>
+                </div>
+            </div>
 
-                <?php
-                }
-                ?>
-
-                </tbody>
-
-            </table>
-
-        </div>
-    </div>
-
-</main>
+        </main>
 
 <!-- JAVASCRIPT -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -241,9 +220,9 @@ $(document).ready(function () {
             search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-            infoEmpty: "Tidak ada data kelas siswa",
+            infoEmpty: "Tidak ada data kelas",
             zeroRecords: "Data tidak ditemukan",
-            emptyTable: "Belum ada data kelas siswa",
+            emptyTable: "Belum ada kelas yang dibuat",
             paginate: {
                 first: "Pertama",
                 last: "Terakhir",

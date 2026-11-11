@@ -78,14 +78,14 @@ mysqli_stmt_close($stmt);
                 <div class="form-group col-md-3">
                     <label>NIS</label>
                     <input type="text" name="nis" class="form-control"
-                           maxlength="15" inputmode="numeric" pattern="[0-9]*"
+                           maxlength="10" inputmode="numeric"
                            value="<?= htmlspecialchars((string)($siswa['nis'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
                 <div class="form-group col-md-3">
                     <label>NISN</label>
                     <input type="text" name="nisn" class="form-control"
-                           maxlength="10" inputmode="numeric" pattern="[0-9]*" required
+                           maxlength="10" inputmode="numeric" required
                            value="<?= htmlspecialchars((string)($siswa['nisn'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
@@ -142,9 +142,6 @@ mysqli_stmt_close($stmt);
 <!-- JavaScript -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- NIS dan NISN hanya boleh angka -->
-<script src="layout/numeric_only.js"></script>
 
 </body>
 </html>

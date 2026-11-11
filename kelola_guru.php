@@ -82,6 +82,22 @@ if (!$hasil) {
         <a href="dashboard.php">Kembali ke Dashboard</a>
     </div>
 
+    <!-- PESAN SUKSES -->
+    <?php if (isset($_SESSION['pesan_sukses'])): ?>
+        <div class="alert alert-success">
+            <?= htmlspecialchars($_SESSION['pesan_sukses']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_sukses']); ?>
+    <?php endif; ?>
+
+    <!-- PESAN ERROR -->
+    <?php if (isset($_SESSION['pesan_error'])): ?>
+        <div class="alert alert-danger">
+            <?= htmlspecialchars($_SESSION['pesan_error']); ?>
+        </div>
+        <?php unset($_SESSION['pesan_error']); ?>
+    <?php endif; ?>
+
     <!-- FORM TAMBAH GURU (dipindah dari tambah_guru.php) -->
     <div class="form-card form-card-full shadow-sm mb-4">
         <h5 class="mb-3">Tambah Guru Baru</h5>
@@ -92,7 +108,7 @@ if (!$hasil) {
                 <div class="form-group col-md-3">
                     <label>NIP</label>
                     <input type="text" name="nip" class="form-control"
-                           maxlength="18" inputmode="numeric" pattern="[0-9]*" required>
+                           maxlength="10" inputmode="numeric" required>
                 </div>
 
                 <div class="form-group col-md-5">
@@ -230,9 +246,6 @@ if (!$hasil) {
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
-
-<!-- NIP hanya boleh angka -->
-<script src="layout/numeric_only.js"></script>
 
 <script>
 $(document).ready(function () {

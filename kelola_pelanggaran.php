@@ -26,9 +26,9 @@ $pesan = '';
 // Pesan setelah proses tambah/edit/hapus
 if (isset($_GET['pesan'])) {
     $daftarPesan = [
-        'tambah' => 'Data pelanggaran berhasil ditambahkan.',
-        'edit'   => 'Data pelanggaran berhasil diperbarui.',
-        'hapus'  => 'Data pelanggaran berhasil dihapus.'
+        'tambah' => 'Jenis pelanggaran berhasil ditambahkan.',
+        'edit'   => 'Jenis pelanggaran berhasil diperbarui.',
+        'hapus'  => 'Jenis pelanggaran berhasil dihapus.'
     ];
     $pesan = $daftarPesan[$_GET['pesan']] ?? '';
 }
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
     $status = (int)($_POST['status_aktif'] ?? 1);
 
     if ($nama === '') {
-        $pesan = 'Nama pelanggaran wajib diisi.';
+        $pesan = 'Nama jenis pelanggaran wajib diisi.';
     } elseif ($poinInput === '' || !is_numeric($poinInput) || (int)$poinInput < 0) {
         $pesan = 'Poin harus berupa angka nol atau lebih.';
     } else {
@@ -77,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tambah'])) {
                 exit;
             }
 
-            $pesan = 'Gagal menambah pelanggaran. Periksa kode atau kategori, lalu coba lagi.';
+            $pesan = 'Gagal menambah jenis pelanggaran. Periksa kode atau kategori, lalu coba lagi.';
             mysqli_stmt_close($stmt);
         } else {
-            $pesan = 'Gagal menyiapkan query tambah pelanggaran.';
+            $pesan = 'Gagal menyiapkan query tambah jenis pelanggaran.';
         }
     }
 }
@@ -98,9 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit'])) {
     $status = (int)($_POST['status_aktif'] ?? 1);
 
     if ($id <= 0) {
-        $pesan = 'ID pelanggaran tidak valid.';
+        $pesan = 'ID jenis pelanggaran tidak valid.';
     } elseif ($nama === '') {
-        $pesan = 'Nama pelanggaran wajib diisi.';
+        $pesan = 'Nama jenis pelanggaran wajib diisi.';
     } elseif ($poinInput === '' || !is_numeric($poinInput) || (int)$poinInput < 0) {
         $pesan = 'Poin harus berupa angka nol atau lebih.';
     } else {
@@ -134,10 +134,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit'])) {
                 exit;
             }
 
-            $pesan = 'Gagal mengubah pelanggaran. Periksa kode atau kategori, lalu coba lagi.';
+            $pesan = 'Gagal mengubah jenis pelanggaran. Periksa kode atau kategori, lalu coba lagi.';
             mysqli_stmt_close($stmt);
         } else {
-            $pesan = 'Gagal menyiapkan query perubahan pelanggaran.';
+            $pesan = 'Gagal menyiapkan query perubahan jenis pelanggaran.';
         }
     }
 }
@@ -158,10 +158,10 @@ if (isset($_GET['hapus'])) {
                 exit;
             }
 
-            $pesan = 'Pelanggaran tidak dapat dihapus karena mungkin masih digunakan.';
+            $pesan = 'Jenis pelanggaran tidak dapat dihapus karena mungkin masih digunakan.';
             mysqli_stmt_close($stmt);
         } else {
-            $pesan = 'Gagal menyiapkan query hapus pelanggaran.';
+            $pesan = 'Gagal menyiapkan query hapus jenis pelanggaran.';
         }
     }
 }
@@ -184,14 +184,17 @@ if (isset($_GET['edit'])) {
     }
 
     if (!$dataEdit) {
-        $pesan = 'Data pelanggaran tidak ditemukan.';
+        $pesan = 'Jenis pelanggaran tidak ditemukan.';
     }
 }
 
-// Ambil daftar kategori
+// Ambil daftar kategori (kategori dummy "Kategori <angka>" disembunyikan)
 $kategoriQuery = mysqli_query(
     $koneksi,
-    'SELECT id, nama FROM t_pelanggaran_kategori ORDER BY nama ASC'
+    "SELECT id, nama
+     FROM t_pelanggaran_kategori
+     WHERE nama NOT REGEXP '^Kategori [0-9]+$'
+     ORDER BY nama ASC"
 );
 
 if (!$kategoriQuery) {
@@ -222,7 +225,7 @@ if (!$dataQuery) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Pelanggaran</title>
+    <title>Kelola Jenis Pelanggaran</title>
 
     <!-- Bootstrap 4, mengikuti kelola_siswa.php -->
     <link rel="stylesheet"
@@ -268,7 +271,7 @@ if (!$dataQuery) {
     <main class="app-main">
 
         <div class="page-header">
-            <h1>Kelola Pelanggaran</h1>
+            <h1>Kelola Jenis Pelanggaran</h1>
             <a href="dashboard.php">Kembali ke Dashboard</a>
         </div>
 
@@ -281,7 +284,7 @@ if (!$dataQuery) {
         <!-- FORM TAMBAH / EDIT -->
         <div class="form-card form-card-full shadow-sm">
             <h5 class="mb-3">
-                <?= $dataEdit ? 'Edit Pelanggaran' : 'Tambah Pelanggaran'; ?>
+                <?= $dataEdit ? 'Edit Jenis Pelanggaran' : 'Tambah Jenis Pelanggaran'; ?>
             </h5>
 
             <form method="POST" action="kelola_pelanggaran.php<?= $dataEdit ? '?edit=' . (int)$dataEdit['id'] : ''; ?>">
@@ -291,7 +294,7 @@ if (!$dataQuery) {
 
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="pelanggaran_kategori_id">Kategori</label>
+                        <label for="pelanggaran_kategori_id">Kategori Pelanggaran</label>
                         <select class="form-control" id="pelanggaran_kategori_id"
                                 name="pelanggaran_kategori_id">
                             <option value="">-- Tanpa Kategori --</option>
@@ -312,9 +315,10 @@ if (!$dataQuery) {
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="nama">Nama Pelanggaran</label>
+                        <label for="nama">Nama Jenis Pelanggaran</label>
                         <input type="text" class="form-control" id="nama"
                                name="nama" maxlength="150" required
+                               placeholder="Contoh: Terlambat masuk kelas"
                                value="<?= h($dataEdit['nama'] ?? ''); ?>">
                     </div>
 
@@ -334,8 +338,9 @@ if (!$dataQuery) {
                     </div>
 
                     <div class="form-group col-12">
-                        <label for="deskripsi">Deskripsi</label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"><?= h($dataEdit['deskripsi'] ?? ''); ?></textarea>
+                        <label for="deskripsi">Deskripsi Jenis Pelanggaran</label>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"
+                                  placeholder="Jelaskan bentuk pelanggaran ini"><?= h($dataEdit['deskripsi'] ?? ''); ?></textarea>
                     </div>
                 </div>
 
@@ -343,14 +348,14 @@ if (!$dataQuery) {
                     <button type="submit" name="edit" class="btn btn-primary">Simpan Perubahan</button>
                     <a href="kelola_pelanggaran.php" class="btn btn-secondary">Batal</a>
                 <?php else: ?>
-                    <button type="submit" name="tambah" class="btn btn-primary">Tambah Pelanggaran</button>
+                    <button type="submit" name="tambah" class="btn btn-primary">Tambah Jenis Pelanggaran</button>
                 <?php endif; ?>
             </form>
         </div>
 
         <!-- TABEL DATA -->
         <div class="table-card shadow-sm">
-            <h5 class="mb-3">Daftar Data Pelanggaran</h5>
+            <h5 class="mb-3">Daftar Jenis Pelanggaran</h5>
 
             <div class="table-responsive">
                 <table id="tabelPelanggaran"
@@ -360,7 +365,7 @@ if (!$dataQuery) {
                             <th>ID</th>
                             <th>Kategori</th>
                             <th>Kode</th>
-                            <th>Nama Pelanggaran</th>
+                            <th>Nama Jenis</th>
                             <th>Poin</th>
                             <th>Deskripsi</th>
                             <th>Status</th>
@@ -389,7 +394,7 @@ if (!$dataQuery) {
                                            href="kelola_pelanggaran.php?edit=<?= (int)$d['id']; ?>">Edit</a>
                                         <a class="btn btn-danger btn-sm"
                                            href="kelola_pelanggaran.php?hapus=<?= (int)$d['id']; ?>"
-                                           onclick="return confirm('Yakin ingin menghapus pelanggaran ini?')">Hapus</a>
+                                           onclick="return confirm('Yakin ingin menghapus jenis pelanggaran ini?')">Hapus</a>
                                     </div>
                                 </td>
                             </tr>
@@ -418,9 +423,9 @@ $(document).ready(function () {
             search: 'Cari:',
             lengthMenu: 'Tampilkan _MENU_ data',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-            infoEmpty: 'Tidak ada data pelanggaran',
-            zeroRecords: 'Data pelanggaran tidak ditemukan',
-            emptyTable: 'Belum ada data pelanggaran',
+            infoEmpty: 'Tidak ada data jenis pelanggaran',
+            zeroRecords: 'Jenis pelanggaran tidak ditemukan',
+            emptyTable: 'Belum ada jenis pelanggaran',
             paginate: {
                 first: 'Pertama',
                 last: 'Terakhir',

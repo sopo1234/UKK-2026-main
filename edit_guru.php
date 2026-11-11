@@ -78,7 +78,7 @@ mysqli_stmt_close($stmt);
                 <div class="form-group col-md-4">
                     <label>NIP</label>
                     <input type="text" name="nip" class="form-control"
-                           maxlength="18" inputmode="numeric" pattern="[0-9]*" required
+                           maxlength="10" inputmode="numeric" required
                            value="<?= htmlspecialchars((string)($guru['nip'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                 </div>
 
@@ -92,20 +92,6 @@ mysqli_stmt_close($stmt);
                     <label>Email</label>
                     <input type="email" name="email" class="form-control" required
                            value="<?= htmlspecialchars((string)($guru['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label>Password Baru</label>
-                    <input type="password" name="password" class="form-control"
-                           autocomplete="new-password" placeholder="Kosongkan jika tidak diubah">
-                </div>
-
-                <div class="form-group col-md-4">
-                    <label>Konfirmasi Password</label>
-                    <input type="password" name="konfirmasi_password" class="form-control"
-                           autocomplete="new-password">
                 </div>
             </div>
 
@@ -129,7 +115,7 @@ mysqli_stmt_close($stmt);
         </form>
 
         <p class="text-muted small mb-0">
-            Catatan: isi password hanya jika ingin menggantinya.
+            Catatan: password akun tidak diubah di sini. Ubah melalui menu user bila diperlukan.
         </p>
     </div>
 
@@ -138,9 +124,6 @@ mysqli_stmt_close($stmt);
 <!-- JavaScript -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- NIP hanya boleh angka -->
-<script src="layout/numeric_only.js"></script>
 
 </body>
 </html>

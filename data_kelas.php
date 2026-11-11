@@ -18,38 +18,36 @@ if (!isset($_SESSION['role'])) {
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            color: #14532d;
+            background-color: #f4f6f9;
+            color: #333;
         }
         .container {
             max-width: 800px;
             background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 6px 24px rgba(22, 163, 74, 0.15);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin: auto;
         }
         h2 {
             margin-top: 0;
-            color: #14532d;
         }
         hr {
             border: 0;
-            border-top: 1px solid #dcfce7;
+            border-top: 1px solid #dee2e6;
             margin-bottom: 20px;
         }
         .btn-tambah {
             display: inline-block;
             padding: 8px 15px;
-            background-color: #16a34a;
+            background-color: #007bff;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-bottom: 15px;
         }
         .btn-tambah:hover {
-            background-color: #14532d;
-            color: white;
+            background-color: #0056b3;
         }
         table {
             width: 100%;
@@ -61,31 +59,29 @@ if (!isset($_SESSION['role'])) {
         table th, table td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #dcfce7;
+            border-bottom: 1px solid #dee2e6;
         }
         table th {
-            background-color: #14532d;
+            background-color: #343a40;
             color: white;
         }
         table tr:hover {
-            background-color: #f0fdf4;
+            background-color: #f1f1f1;
         }
         .btn-action {
             padding: 5px 10px;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 3px;
             color: white;
             font-size: 14px;
             margin-right: 5px;
         }
         .btn-edit {
-            background-color: #ffffff;
-            color: #16a34a;
-            border: 1px solid #16a34a;
+            background-color: #ffc107;
+            color: #333;
         }
         .btn-edit:hover {
-            background-color: #dcfce7;
-            color: #14532d;
+            background-color: #e0a800;
         }
         .btn-hapus {
             background-color: #dc3545;
@@ -96,7 +92,7 @@ if (!isset($_SESSION['role'])) {
         .back-link {
             display: inline-block;
             margin-top: 15px;
-            color: #166534;
+            color: #007bff;
             text-decoration: none;
         }
         .back-link:hover {

@@ -3,12 +3,6 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
-// Hanya guru yang boleh akses
-if (($_SESSION['role'] ?? '') != 'guru') {
-    header("Location: dashboard.php");
-    exit;
-}
-
 function e($nilai)
 {
     return htmlspecialchars((string)($nilai ?? ''), ENT_QUOTES, 'UTF-8');
@@ -30,7 +24,6 @@ $cari     = trim($_GET['q'] ?? '');
 $kelas_id = (int) ($_GET['kelas_id'] ?? 0);
 $dari     = trim($_GET['dari'] ?? '');
 $sampai   = trim($_GET['sampai'] ?? '');
-$status   = $_GET['status'] ?? '';
 $oleh     = $_GET['oleh'] ?? 'semua';
 
 $tgl_valid = function ($t) {
@@ -43,11 +36,8 @@ if ($dari !== '' && !$tgl_valid($dari)) {
 if ($sampai !== '' && !$tgl_valid($sampai)) {
     $sampai = '';
 }
-if (!in_array($status, ['tercatat', 'ditindak', 'selesai'], true)) {
-    $status = '';
-}
 
-$where = [];
+$where = ["ps.status = 'selesai'"]; // hanya catatan yang selesai ditindak
 $tipe  = '';
 $param = [];
 
@@ -71,11 +61,6 @@ if ($sampai !== '') {
     $where[] = 'ps.tanggal <= ?';
     $tipe   .= 's';
     $param[] = $sampai;
-}
-if ($status !== '') {
-    $where[] = 'ps.status = ?';
-    $tipe   .= 's';
-    $param[] = $status;
 }
 if ($oleh === 'saya') {
     if ($guru_id !== null) {
@@ -128,9 +113,8 @@ $q_kelas = mysqli_query($koneksi, "SELECT id, nama FROM t_kelas ORDER BY tingkat
 
 $query_string = http_build_query([
     'q' => $cari, 'kelas_id' => $kelas_id, 'dari' => $dari,
-    'sampai' => $sampai, 'status' => $status, 'oleh' => $oleh,
+    'sampai' => $sampai, 'oleh' => $oleh,
 ]);
-$warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'success'];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -139,137 +123,131 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Pelanggaran</title>
 
-    <?php include 'layout/datatables_head.php'; ?>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="layout/layout.css">
+    <link rel="stylesheet" href="layout/tema.css">
+    <style>
+        /* Warna badge status mengikuti palet tema (teal) */
+        .text-bg-secondary {
+            background-color: #2f737d !important;
+            color: #f7f9f8 !important;
+        }
+    </style>
 </head>
 <body>
 
-<!-- SIDEBAR BERSAMA -->
-<?php include "layout/sidebar.php"; ?>
+<?php include 'layout/sidebar.php'; ?>
 
-<!-- KONTEN UTAMA -->
 <main class="app-main">
 
     <div class="page-header">
         <h1>Riwayat Pelanggaran</h1>
-        <p class="page-description">Seluruh catatan pelanggaran siswa yang pernah tersimpan.</p>
+        <a href="dashboard.php">Kembali ke Dashboard</a>
+        <p class="mb-0 text-muted">Arsip catatan pelanggaran yang sudah selesai ditindak.</p>
     </div>
 
     <div class="table-card shadow-sm">
 
-        <form method="GET" action="riwayat.php" class="form-row mb-3">
-            <div class="form-group col-md-4">
-                <input type="text" name="q" value="<?= e($cari) ?>" class="form-control"
-                       placeholder="Cari nama, NIS, atau pelanggaran...">
+                <form method="GET" action="riwayat.php" class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <input type="text" name="q" value="<?= e($cari) ?>" class="form-control"
+                               placeholder="Cari nama, NIS, atau pelanggaran...">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="kelas_id" class="form-select">
+                            <option value="0">Semua kelas</option>
+                            <?php while ($k = mysqli_fetch_assoc($q_kelas)): ?>
+                                <option value="<?= (int) $k['id'] ?>" <?= $kelas_id === (int) $k['id'] ? 'selected' : '' ?>>
+                                    <?= e($k['nama']) ?>
+                                </option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="oleh" class="form-select">
+                            <option value="semua" <?= $oleh === 'semua' ? 'selected' : '' ?>>Dicatat siapa saja</option>
+                            <option value="saya" <?= $oleh === 'saya' ? 'selected' : '' ?>>Catatan saya saja</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label small mb-0">Dari tanggal</label>
+                        <input type="date" name="dari" value="<?= e($dari) ?>" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small mb-0">Sampai tanggal</label>
+                        <input type="date" name="sampai" value="<?= e($sampai) ?>" class="form-control">
+                    </div>
+                    <div class="col-md-6 d-flex gap-2 align-items-end">
+                        <button type="submit" class="btn btn-primary">Tampilkan</button>
+                        <a href="riwayat.php" class="btn btn-outline-secondary">Reset</a>
+                        <button type="button" class="btn btn-outline-dark ms-auto" onclick="window.print()">Cetak</button>
+                    </div>
+                </form>
+
+                <p class="text-muted small mb-2">
+                    <?= $total ?> catatan &middot; total <?= $total_poin ?> poin
+                </p>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Siswa</th>
+                                <th>Kelas</th>
+                                <th>Pelanggaran</th>
+                                <th>Poin</th>
+                                <th>Tindakan</th>
+                                <th>Dicatat oleh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($total === 0): ?>
+                                <tr><td colspan="8" class="text-center text-muted">Belum ada catatan yang selesai ditindak.</td></tr>
+                            <?php endif; ?>
+
+                            <?php $no = $offset + 1; while ($r = mysqli_fetch_assoc($hasil)): ?>
+                                <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td class="text-nowrap"><?= e($r['tanggal']) ?></td>
+                                    <td>
+                                        <?= e($r['nama_siswa']) ?>
+                                        <div class="small text-muted"><?= e($r['nis']) ?></div>
+                                    </td>
+                                    <td><?= e($r['nama_kelas']) ?></td>
+                                    <td>
+                                        <?= e($r['nama_pelanggaran']) ?>
+                                        <?php if ($r['keterangan'] !== ''): ?>
+                                            <div class="small text-muted"><?= e($r['keterangan']) ?></div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= (int) $r['poin'] ?></td>
+                                    <td><?= $r['tindakan'] !== '' ? e($r['tindakan']) : '<span class="text-muted">-</span>' ?></td>
+                                    <td><?= e($r['nama_guru']) ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <?php if ($total_halaman > 1): ?>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item <?= $halaman <= 1 ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman - 1 ?>">&laquo;</a>
+                            </li>
+                            <li class="page-item disabled"><span class="page-link"><?= $halaman ?> / <?= $total_halaman ?></span></li>
+                            <li class="page-item <?= $halaman >= $total_halaman ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman + 1 ?>">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
             </div>
-            <div class="form-group col-md-3">
-                <select name="kelas_id" class="form-control">
-                    <option value="0">Semua kelas</option>
-                    <?php while ($k = mysqli_fetch_assoc($q_kelas)): ?>
-                        <option value="<?= (int) $k['id'] ?>" <?= $kelas_id === (int) $k['id'] ? 'selected' : '' ?>>
-                            <?= e($k['nama']) ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-            <div class="form-group col-md-2">
-                <select name="status" class="form-control">
-                    <option value="">Semua status</option>
-                    <option value="tercatat" <?= $status === 'tercatat' ? 'selected' : '' ?>>Tercatat</option>
-                    <option value="ditindak" <?= $status === 'ditindak' ? 'selected' : '' ?>>Ditindak</option>
-                    <option value="selesai" <?= $status === 'selesai' ? 'selected' : '' ?>>Selesai</option>
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <select name="oleh" class="form-control">
-                    <option value="semua" <?= $oleh === 'semua' ? 'selected' : '' ?>>Dicatat siapa saja</option>
-                    <option value="saya" <?= $oleh === 'saya' ? 'selected' : '' ?>>Catatan saya saja</option>
-                </select>
-            </div>
 
-            <div class="form-group col-md-3">
-                <label class="small mb-0">Dari tanggal</label>
-                <input type="date" name="dari" value="<?= e($dari) ?>" class="form-control">
-            </div>
-            <div class="form-group col-md-3">
-                <label class="small mb-0">Sampai tanggal</label>
-                <input type="date" name="sampai" value="<?= e($sampai) ?>" class="form-control">
-            </div>
-            <div class="form-group col-md-6 d-flex gap-2 align-items-end">
-                <button type="submit" class="btn btn-primary">Tampilkan</button>
-                <a href="riwayat.php" class="btn btn-secondary">Reset</a>
-                <button type="button" class="btn btn-outline-dark ml-auto" onclick="window.print()">Cetak</button>
-            </div>
-        </form>
-
-        <p class="text-muted small mb-2">
-            <?= $total ?> catatan &middot; total <?= $total_poin ?> poin
-        </p>
-
-        <div class="table-responsive">
-            <table id="tabelRiwayat" class="table table-bordered table-striped table-hover table-sm align-middle">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>No</th>
-                        <th>Tanggal</th>
-                        <th>Siswa</th>
-                        <th>Kelas</th>
-                        <th>Pelanggaran</th>
-                        <th>Poin</th>
-                        <th>Tindakan</th>
-                        <th>Status</th>
-                        <th>Dicatat oleh</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($total === 0): ?>
-                        <tr><td colspan="9" class="text-center text-muted">Tidak ada riwayat yang cocok.</td></tr>
-                    <?php endif; ?>
-
-                    <?php $no = $offset + 1; while ($r = mysqli_fetch_assoc($hasil)): ?>
-                        <tr>
-                            <td><?= $no++ ?></td>
-                            <td class="text-nowrap"><?= e($r['tanggal']) ?></td>
-                            <td>
-                                <?= e($r['nama_siswa']) ?>
-                                <div class="small text-muted"><?= e($r['nis']) ?></div>
-                            </td>
-                            <td><?= e($r['nama_kelas']) ?></td>
-                            <td>
-                                <?= e($r['nama_pelanggaran']) ?>
-                                <?php if ($r['keterangan'] !== ''): ?>
-                                    <div class="small text-muted"><?= e($r['keterangan']) ?></div>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= (int) $r['poin'] ?></td>
-                            <td><?= $r['tindakan'] !== '' ? e($r['tindakan']) : '<span class="text-muted">-</span>' ?></td>
-                            <td><span class="badge badge-<?= $warna[$r['status']] ?? 'secondary' ?>"><?= e(ucfirst($r['status'])) ?></span></td>
-                            <td><?= e($r['nama_guru']) ?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <?php if ($total_halaman > 1): ?>
-            <nav class="mt-3">
-                <ul class="pagination pagination-sm mb-0 justify-content-center">
-                    <li class="page-item <?= $halaman <= 1 ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman - 1 ?>">&laquo;</a>
-                    </li>
-                    <li class="page-item disabled"><span class="page-link"><?= $halaman ?> / <?= $total_halaman ?></span></li>
-                    <li class="page-item <?= $halaman >= $total_halaman ? 'disabled' : '' ?>">
-                        <a class="page-link" href="?<?= e($query_string) ?>&hal=<?= $halaman + 1 ?>">&raquo;</a>
-                    </li>
-                </ul>
-            </nav>
-        <?php endif; ?>
-    </div>
-
-</main>
-
-<?php include 'layout/datatables_bottom.php'; ?>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        </main>
 
 </body>
 </html>

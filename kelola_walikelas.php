@@ -31,25 +31,9 @@ if (!$data) {
 }
 
 // Data dropdown untuk form tambah (dipindah dari tambah_walikelas.php)
-$ta_aktif = mysqli_fetch_assoc(mysqli_query(
-    $koneksi,
-    "SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC LIMIT 1"
-));
-$id_ta = (int)($ta_aktif['id'] ?? 0);
-
-$q_guru  = mysqli_query($koneksi, "SELECT id, nama FROM t_guru
-            WHERE id NOT IN (
-                SELECT guru_id FROM t_wali_kelas
-                WHERE tahun_ajaran_id = $id_ta AND guru_id IS NOT NULL
-            )
-            ORDER BY nama");
-$q_kelas  = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas
-            WHERE id NOT IN (
-                SELECT kelas_id FROM t_wali_kelas
-                WHERE tahun_ajaran_id = $id_ta AND kelas_id IS NOT NULL
-            )
-            ORDER BY nama");
-$q_ta  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY nama DESC");
+$q_guru  = mysqli_query($koneksi, "SELECT id, nama FROM t_guru ORDER BY nama");
+$q_kelas  = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas ORDER BY nama");
+$q_ta  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY nama DESC");
 ?>
 
 <!DOCTYPE html>

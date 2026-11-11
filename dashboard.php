@@ -90,50 +90,15 @@ if ($wali_kelas) {
     <!-- Bootstrap 5 agar min-vh-100 berfungsi -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
-
-    <!-- Tema hijau - putih -->
-    <style>
-        body {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        }
-
-        main h2 {
-            color: #14532d;
-        }
-
-        main h4 {
-            color: #14532d;
-        }
-
-        .card {
-            border-radius: 12px;
-            border: none;
-        }
-
-        /* Garis aksen hijau di atas kartu statistik */
-        .stat-card {
-            border-top: 4px solid #16a34a;
-        }
-
-        .stat-card .card-title {
-            color: #14532d;
-            font-weight: bold;
-        }
-
-        /* Angka statistik berwarna hijau */
-        .angka-hijau {
-            color: #16a34a;
-        }
-    </style>
 </head>
 
-<body>
+<body class="bg-white">
 
 <!-- SIDEBAR BERSAMA -->
 <?php require_once __DIR__ . '/layout/sidebar.php'; ?>
 
 <!-- KONTEN UTAMA -->
-<main class="app-main">
+<main class="app-main bg-white">
 
     <h2>Dashboard</h2>
 
@@ -160,39 +125,39 @@ if ($wali_kelas) {
 
                 <!-- KARTU SISWA -->
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm stat-card">
+                    <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
                                 Data Siswa
                             </h5>
 
-                            <h2 class="angka-hijau mb-0"><?= $total_siswa; ?></h2>
+                            <h2><?= $total_siswa; ?></h2>
                         </div>
                     </div>
                 </div>
 
                 <!-- KARTU GURU -->
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm stat-card">
+                    <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
                                 Data Guru
                             </h5>
 
-                            <h2 class="angka-hijau mb-0"><?= $total_guru; ?></h2>
+                            <h2><?= $total_guru; ?></h2>
                         </div>
                     </div>
                 </div>
 
                 <!-- KARTU KELAS -->
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm stat-card">
+                    <div class="card shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">
                                 Kelas
                             </h5>
 
-                            <h2 class="angka-hijau mb-0"><?= $total_kelas; ?></h2>
+                            <h2><?= $total_kelas; ?></h2>
                         </div>
                     </div>
                 </div>
@@ -202,7 +167,7 @@ if ($wali_kelas) {
                 <!-- PANEL WALI KELAS -->
                 <?php if ($wali_kelas) { ?>
                     <div class="col-md-6 mb-3">
-                        <div class="card shadow-sm border-success stat-card">
+                        <div class="card shadow-sm border-primary">
                             <div class="card-body">
                                 <h5 class="card-title">Kelas Yang Diampu</h5>
                                 <h2><?= htmlspecialchars($wali_kelas['nama_kelas'] ?? '-', ENT_QUOTES, 'UTF-8'); ?></h2>
@@ -211,19 +176,19 @@ if ($wali_kelas) {
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm stat-card">
+                        <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Siswa Kelas</h5>
-                                <h2 class="angka-hijau mb-0"><?= $total_siswa_wk; ?></h2>
+                                <h2><?= $total_siswa_wk; ?></h2>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-3 mb-3">
-                        <div class="card shadow-sm stat-card">
+                        <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Pelanggaran Kelas</h5>
-                                <h2 class="angka-hijau mb-0"><?= $total_pelanggaran_wk; ?></h2>
+                                <h2><?= $total_pelanggaran_wk; ?></h2>
                             </div>
                         </div>
                     </div>
@@ -231,7 +196,7 @@ if ($wali_kelas) {
 
                     <!-- GURU BIASA -->
                     <div class="col-md-4 mb-3">
-                        <div class="card shadow-sm stat-card">
+                        <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Catatan Pelanggaran</h5>
                                 <p class="card-text">Silakan catat pelanggaran siswa melalui menu di samping.</p>
@@ -257,30 +222,30 @@ if ($wali_kelas) {
             <?php if ($role === 'admin') { ?>
 
                 <a href="kelola_siswa.php"
-                   class="btn btn-success">
+                   class="btn btn-primary">
                     Kelola Data Siswa
                 </a>
 
                 <a href="kelola_pelanggaran.php"
-                   class="btn btn-outline-success">
-                    Data Pelanggaran
+                   class="btn btn-secondary">
+                    Jenis Pelanggaran
                 </a>
 
             <?php } else { ?>
 
                 <a href="catatan_pelanggaran.php"
-                   class="btn btn-success">
+                   class="btn btn-primary">
                     Catat Pelanggaran
                 </a>
 
                 <a href="rekap_poin.php"
-                   class="btn btn-outline-success">
+                   class="btn btn-secondary">
                     Rekap Poin
                 </a>
 
                 <?php if ($wali_kelas) { ?>
                     <a href="kelola_kelas_siswa.php"
-                       class="btn btn-outline-success">
+                       class="btn btn-info">
                         Data Siswa Kelas <?= htmlspecialchars($wali_kelas['nama_kelas'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </a>
                 <?php } ?>

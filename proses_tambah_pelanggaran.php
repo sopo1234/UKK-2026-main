@@ -24,7 +24,7 @@ $penempatan_id = (int)($_POST['penempatan_id'] ?? 0);
 $pelanggaran_id = (int)($_POST['pelanggaran_id'] ?? 0);
 $tanggal = $_POST['tanggal'] ?? '';
 $keterangan = trim($_POST['keterangan'] ?? '');
-$tindakan = ''; // Tindakan tidak diinput manual, akan ditentukan berdasarkan akumulasi poin
+$tindakan = trim($_POST['tindakan'] ?? '');
 
 if (!$penempatan_id || !$pelanggaran_id || !$tanggal ||
     $keterangan === '') {
@@ -54,14 +54,6 @@ if (!$s) {
     die("Penempatan siswa tidak ditemukan atau tidak aktif.");
 }
 
-// Wali kelas hanya boleh mencatat pelanggaran siswa di kelas yang diampu
-include 'includes/wali_kelas.php';
-$wali = cari_wali_kelas($koneksi, $user_id);
-if ($wali && (int)$s['kelas_id'] !== (int)$wali['kelas_id']) {
-    die("Akses ditolak: Anda wali kelas " . htmlspecialchars($wali['nama_kelas'] ?? '-', ENT_QUOTES, 'UTF-8')
-        . ", sehingga hanya boleh mencatat pelanggaran siswa dari kelas tersebut.");
-}
-
 // Ambil jenis pelanggaran
 $stmt = mysqli_prepare($koneksi, "
     SELECT id, nama, poin, pelanggaran_kategori_id
@@ -85,7 +77,7 @@ $nama_pelanggaran = $p['nama'];
 $kategori_id = (int)($p['pelanggaran_kategori_id'] ?? 0);
 $nama_guru = $guru['nama'];
 $poin = (int)$p['poin'];
-$status = 'Belum diproses';
+$status = 'tercatat';
 
 // Simpan catatan baru
 $stmt = mysqli_prepare($koneksi, "
