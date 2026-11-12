@@ -164,10 +164,12 @@ if (!$siswa || !$tahun || !$kelas || !$hasil) {
                             class="form-control" required>
                         <option value="">-- Pilih Tahun Ajaran --</option>
 
+                        <?php $tahun_terpilih = true; ?>
                         <?php while ($ta = mysqli_fetch_assoc($tahun)): ?>
-                            <option value="<?= h($ta['id']); ?>">
+                            <option value="<?= h($ta['id']); ?>" <?= $tahun_terpilih ? 'selected' : ''; ?>>
                                 <?= h($ta['nama']); ?>
                             </option>
+                            <?php $tahun_terpilih = false; ?>
                         <?php endwhile; ?>
                     </select>
                 </div>

@@ -121,7 +121,8 @@ if (isset($_GET["pesan"])) {
 
 // Ambil data pilihan dari database
 $tahun = $pdo->query(
-    "SELECT id, nama FROM t_tahun_ajaran ORDER BY id DESC"
+    "SELECT id, nama, status_aktif FROM t_tahun_ajaran
+     ORDER BY status_aktif DESC, id DESC"
 )->fetchAll(PDO::FETCH_ASSOC);
 
 $siswa = $pdo->query(
@@ -189,7 +190,8 @@ $data = $pdo->query(
         <select name="tahun_ajaran_id" required>
             <option value="">Pilih Tahun Ajaran</option>
             <?php foreach ($tahun as $t): ?>
-                <option value="<?php echo h($t["id"]); ?>">
+                <option value="<?php echo h($t["id"]); ?>"
+                    <?php echo (int)$t["status_aktif"] === 1 ? "selected" : ""; ?>>
                     <?php echo h($t["nama"]); ?>
                 </option>
             <?php endforeach; ?>
@@ -325,6 +327,7 @@ $data = $pdo->query(
     <?php endforeach; ?>
 </table>
 
+<?php include 'layout/searchable_select.php'; ?>
 </body>
 </html>
 ```

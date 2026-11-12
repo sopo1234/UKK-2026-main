@@ -75,10 +75,12 @@ $tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE statu
                     <label>Tahun Ajaran</label>
                     <select name="tahun_ajaran_id" class="form-control" required>
                         <option value="">-- Pilih Tahun Ajaran --</option>
+                        <?php $tahun_terpilih = true; ?>
                         <?php while ($t = mysqli_fetch_assoc($tahun)) { ?>
-                            <option value="<?= (int)$t['id']; ?>">
+                            <option value="<?= (int)$t['id']; ?>" <?= $tahun_terpilih ? 'selected' : ''; ?>>
                                 <?= htmlspecialchars($t['nama']); ?>
                             </option>
+                            <?php $tahun_terpilih = false; ?>
                         <?php } ?>
                     </select>
                 </div>

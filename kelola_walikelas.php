@@ -33,7 +33,7 @@ if (!$data) {
 // Data dropdown untuk form tambah (dipindah dari tambah_walikelas.php)
 $q_guru  = mysqli_query($koneksi, "SELECT id, nama FROM t_guru ORDER BY nama");
 $q_kelas  = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas ORDER BY nama");
-$q_ta  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY nama DESC");
+$q_ta  = mysqli_query($koneksi, "SELECT id, nama, status_aktif FROM t_tahun_ajaran ORDER BY status_aktif DESC, nama DESC");
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +109,8 @@ $q_ta  = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY na
                             <select name="tahun_ajaran_id" class="form-control" required>
                                 <option value="">-- Pilih Tahun Ajaran --</option>
                                 <?php while ($ta = mysqli_fetch_assoc($q_ta)) { ?>
-                                    <option value="<?= (int)$ta['id']; ?>">
+                                    <option value="<?= (int)$ta['id']; ?>"
+                                        <?= (int)$ta['status_aktif'] === 1 ? 'selected' : ''; ?>>
                                         <?= htmlspecialchars($ta['nama']); ?>
                                     </option>
                                 <?php } ?>

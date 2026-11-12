@@ -149,5 +149,6 @@ if (isset($_POST['simpan'])) {
         </form>
     </div>
 
+<?php include 'layout/searchable_select.php'; ?>
 </body>
 </html>

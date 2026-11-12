@@ -49,6 +49,8 @@ if ($role === 'admin') {
 <link rel="stylesheet" href="layout/layout.css">
 <link rel="stylesheet" href="layout/tema.css">
 
+<?php include __DIR__ . '/searchable_select.php'; ?>
+
 <aside class="app-sidebar">
     <h4>Pelanggaran Siswa</h4>
 
