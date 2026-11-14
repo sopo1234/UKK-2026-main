@@ -68,6 +68,13 @@ while ($row = mysqli_fetch_assoc($res_wali)) {
 }
 mysqli_stmt_close($stmt);
 
+// Guru biasa (bukan wali kelas aktif) tidak boleh menyimpan laporan.
+if (!$kelas_wali) {
+    $_SESSION['pesan_error'] = 'Laporan hanya dapat disimpan oleh guru yang menjadi wali kelas aktif.';
+    header('Location: dashboard.php');
+    exit;
+}
+
 // ---------- AMBIL + VALIDASI DATA ----------
 $judul   = trim($_POST['judul'] ?? '');
 $periode = trim($_POST['periode'] ?? '');
@@ -128,10 +135,10 @@ if (!$kelas_wali) {
 }
 
 if ($cari !== '') {
-    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR ps.nama_pelanggaran LIKE ?)';
-    $tipe   .= 'sss';
+    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR p.nama LIKE ? OR ps.nama_pelanggaran LIKE ?)';
+    $tipe   .= 'ssss';
     $like    = '%' . $cari . '%';
-    array_push($param, $like, $like, $like);
+    array_push($param, $like, $like, $like, $like);
 }
 if ($kelas_id > 0) {
     $where[] = 'ps.kelas_id = ?';
@@ -165,6 +172,7 @@ $stmt = mysqli_prepare($koneksi, "
     SELECT COUNT(*) AS total, COALESCE(SUM(ps.poin), 0) AS total_poin
     FROM t_pelanggaran_siswa ps
     LEFT JOIN t_siswa s ON s.id = ps.siswa_id
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
     $sql_where
 ");
 if ($param) {

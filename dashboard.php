@@ -102,6 +102,20 @@ if ($wali_kelas) {
 
     <h2>Dashboard</h2>
 
+            <?php if (isset($_SESSION['pesan_error'])): ?>
+                <div class="alert alert-danger">
+                    <?= htmlspecialchars((string) $_SESSION['pesan_error'], ENT_QUOTES, 'UTF-8') ?>
+                </div>
+                <?php unset($_SESSION['pesan_error']); ?>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['pesan_sukses'])): ?>
+                <div class="alert alert-success">
+                    <?= htmlspecialchars((string) $_SESSION['pesan_sukses'], ENT_QUOTES, 'UTF-8') ?>
+                </div>
+                <?php unset($_SESSION['pesan_sukses']); ?>
+            <?php endif; ?>
+
             <p>
                 Selamat datang,
                 <strong><?= $username; ?></strong>.

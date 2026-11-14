@@ -123,9 +123,11 @@ $halaman       = min($halaman, $total_halaman);
 $offset        = ($halaman - 1) * $per_halaman;
 
 $stmt = mysqli_prepare($koneksi, "
-    SELECT id, tanggal, nama_siswa, nama_kelas, nama_pelanggaran, poin,
-           keterangan, tindakan, status, nama_guru
-    FROM t_pelanggaran_siswa
+    SELECT ps.id, ps.tanggal, ps.nama_siswa, ps.nama_kelas,
+           COALESCE(NULLIF(p.nama, ''), NULLIF(ps.nama_pelanggaran, '0'), '') AS nama_pelanggaran,
+           ps.poin, ps.keterangan, ps.tindakan, ps.status, ps.nama_guru
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
     $sql_where
     ORDER BY (status = 'selesai') ASC, tanggal DESC, id DESC
     LIMIT $per_halaman OFFSET $offset

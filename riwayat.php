@@ -24,7 +24,6 @@ $cari     = trim($_GET['q'] ?? '');
 $kelas_id = (int) ($_GET['kelas_id'] ?? 0);
 $dari     = trim($_GET['dari'] ?? '');
 $sampai   = trim($_GET['sampai'] ?? '');
-$oleh     = $_GET['oleh'] ?? 'semua';
 
 $tgl_valid = function ($t) {
     $d = DateTime::createFromFormat('Y-m-d', $t);
@@ -41,11 +40,24 @@ $where = ["ps.status = 'selesai'"]; // hanya catatan yang selesai ditindak
 $tipe  = '';
 $param = [];
 
+// Riwayat hanya menampilkan data yang dicatat/ditindak oleh guru yang login.
+if ($guru_id !== null) {
+    $where[] = 'ps.guru_id = ?';
+    $tipe   .= 'i';
+    $param[] = $guru_id;
+} elseif (!empty($_SESSION['name'])) {
+    $where[] = 'ps.nama_guru = ?';
+    $tipe   .= 's';
+    $param[] = $_SESSION['name'];
+} else {
+    $where[] = '1=0';
+}
+
 if ($cari !== '') {
-    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR ps.nama_pelanggaran LIKE ?)';
-    $tipe   .= 'sss';
+    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR p.nama LIKE ? OR ps.nama_pelanggaran LIKE ?)';
+    $tipe   .= 'ssss';
     $like    = '%' . $cari . '%';
-    array_push($param, $like, $like, $like);
+    array_push($param, $like, $like, $like, $like);
 }
 if ($kelas_id > 0) {
     $where[] = 'ps.kelas_id = ?';
@@ -62,25 +74,17 @@ if ($sampai !== '') {
     $tipe   .= 's';
     $param[] = $sampai;
 }
-if ($oleh === 'saya') {
-    if ($guru_id !== null) {
-        $where[] = 'ps.guru_id = ?';
-        $tipe   .= 'i';
-        $param[] = $guru_id;
-    } else {
-        $where[] = 'ps.nama_guru = ?';
-        $tipe   .= 's';
-        $param[] = $_SESSION['name'] ?? '';
-    }
-} else {
-    $oleh = 'semua';
-}
 
 $sql_where   = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 $per_halaman = 20;
 $halaman     = max(1, (int) ($_GET['hal'] ?? 1));
 
-$dasar = "FROM t_pelanggaran_siswa ps LEFT JOIN t_siswa s ON s.id = ps.siswa_id $sql_where";
+$dasar = "
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_siswa s ON s.id = ps.siswa_id
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+    $sql_where
+";
 
 $stmt = mysqli_prepare($koneksi, "SELECT COUNT(*) AS total, COALESCE(SUM(ps.poin),0) AS total_poin $dasar");
 if ($param) {
@@ -97,7 +101,8 @@ $halaman       = min($halaman, $total_halaman);
 $offset        = ($halaman - 1) * $per_halaman;
 
 $stmt = mysqli_prepare($koneksi, "
-    SELECT ps.tanggal, ps.nama_siswa, s.nis, ps.nama_kelas, ps.nama_pelanggaran,
+    SELECT ps.tanggal, ps.nama_siswa, s.nis, ps.nama_kelas,
+           COALESCE(NULLIF(p.nama, ''), NULLIF(ps.nama_pelanggaran, '0'), '') AS nama_pelanggaran,
            ps.poin, ps.keterangan, ps.tindakan, ps.status, ps.nama_guru
     $dasar
     ORDER BY ps.tanggal DESC, ps.id DESC
@@ -113,7 +118,7 @@ $q_kelas = mysqli_query($koneksi, "SELECT id, nama FROM t_kelas ORDER BY tingkat
 
 $query_string = http_build_query([
     'q' => $cari, 'kelas_id' => $kelas_id, 'dari' => $dari,
-    'sampai' => $sampai, 'oleh' => $oleh,
+    'sampai' => $sampai,
 ]);
 ?>
 <!DOCTYPE html>
@@ -143,13 +148,13 @@ $query_string = http_build_query([
     <div class="page-header">
         <h1>Riwayat Pelanggaran</h1>
         <a href="dashboard.php">Kembali ke Dashboard</a>
-        <p class="mb-0 text-muted">Arsip catatan pelanggaran yang sudah selesai ditindak.</p>
+        <p class="mb-0 text-muted">Arsip catatan pelanggaran yang Anda catat/ditindak dan sudah selesai.</p>
     </div>
 
     <div class="table-card shadow-sm">
 
                 <form method="GET" action="riwayat.php" class="row g-2 mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-9">
                         <input type="text" name="q" value="<?= e($cari) ?>" class="form-control"
                                placeholder="Cari nama, NIS, atau pelanggaran...">
                     </div>
@@ -161,12 +166,6 @@ $query_string = http_build_query([
                                     <?= e($k['nama']) ?>
                                 </option>
                             <?php endwhile; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="oleh" class="form-select">
-                            <option value="semua" <?= $oleh === 'semua' ? 'selected' : '' ?>>Dicatat siapa saja</option>
-                            <option value="saya" <?= $oleh === 'saya' ? 'selected' : '' ?>>Catatan saya saja</option>
                         </select>
                     </div>
 
@@ -205,7 +204,7 @@ $query_string = http_build_query([
                         </thead>
                         <tbody>
                             <?php if ($total === 0): ?>
-                                <tr><td colspan="8" class="text-center text-muted">Belum ada catatan yang selesai ditindak.</td></tr>
+                                <tr><td colspan="8" class="text-center text-muted">Belum ada catatan Anda yang selesai ditindak.</td></tr>
                             <?php endif; ?>
 
                             <?php $no = $offset + 1; while ($r = mysqli_fetch_assoc($hasil)): ?>

@@ -36,10 +36,12 @@ $id = (int)($_GET['id'] ?? 0);
 
 // Ambil catatan milik guru yang login
 $stmt = mysqli_prepare($koneksi, "
-    SELECT id, tanggal, nama_siswa, nama_kelas, nama_pelanggaran,
-           poin, keterangan, tindakan, status
-    FROM t_pelanggaran_siswa
-    WHERE id = ? AND guru_id = ?
+    SELECT ps.id, ps.tanggal, ps.nama_siswa, ps.nama_kelas,
+           COALESCE(NULLIF(p.nama, ''), NULLIF(ps.nama_pelanggaran, '0'), '') AS nama_pelanggaran,
+           ps.poin, ps.keterangan, ps.tindakan, ps.status
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+    WHERE ps.id = ? AND ps.guru_id = ?
     LIMIT 1
 ");
 mysqli_stmt_bind_param($stmt, "ii", $id, $guru_id);

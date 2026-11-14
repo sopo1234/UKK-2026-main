@@ -65,6 +65,13 @@ while ($row = mysqli_fetch_assoc($res_wali)) {
 }
 mysqli_stmt_close($stmt);
 
+// Guru biasa (bukan wali kelas aktif) tidak boleh mengakses laporan.
+if (!$kelas_wali) {
+    $_SESSION['pesan_error'] = 'Laporan hanya dapat diakses oleh guru yang menjadi wali kelas aktif.';
+    header('Location: dashboard.php');
+    exit;
+}
+
 // ---------- FILTER ----------
 $cari     = trim($_GET['q'] ?? '');
 $kelas_id = (int) ($_GET['kelas_id'] ?? 0);
@@ -109,10 +116,10 @@ if (!$kelas_wali) {
 }
 
 if ($cari !== '') {
-    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR ps.nama_pelanggaran LIKE ?)';
-    $tipe   .= 'sss';
+    $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR p.nama LIKE ? OR ps.nama_pelanggaran LIKE ?)';
+    $tipe   .= 'ssss';
     $like    = '%' . $cari . '%';
-    array_push($param, $like, $like, $like);
+    array_push($param, $like, $like, $like, $like);
 }
 if ($kelas_id > 0) {
     $where[] = 'ps.kelas_id = ?';
@@ -142,7 +149,12 @@ if ($oleh === 'saya' && $guru_id !== null) {
 
 $sql_where = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-$dasar = "FROM t_pelanggaran_siswa ps LEFT JOIN t_siswa s ON s.id = ps.siswa_id $sql_where";
+$dasar = "
+    FROM t_pelanggaran_siswa ps
+    LEFT JOIN t_siswa s ON s.id = ps.siswa_id
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
+    $sql_where
+";
 
 // ---------- RINGKASAN ----------
 $stmt = mysqli_prepare($koneksi, "
@@ -164,7 +176,8 @@ $total_siswa  = (int) $ringkas['total_siswa'];
 
 // ---------- DAFTAR PELANGGARAN (maks 100 baris) ----------
 $stmt = mysqli_prepare($koneksi, "
-    SELECT ps.tanggal, ps.nama_siswa, s.nis, ps.nama_kelas, ps.nama_pelanggaran,
+    SELECT ps.tanggal, ps.nama_siswa, s.nis, ps.nama_kelas,
+           COALESCE(NULLIF(p.nama, ''), NULLIF(ps.nama_pelanggaran, '0'), '') AS nama_pelanggaran,
            ps.poin, ps.keterangan, ps.tindakan, ps.status, ps.nama_guru
     $dasar
     ORDER BY ps.tanggal DESC, ps.id DESC
@@ -266,12 +279,6 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <?php unset($_SESSION['pesan_error']); ?>
-    <?php endif; ?>
-
-    <?php if (!$kelas_wali): ?>
-        <div class="alert alert-info">
-            Anda belum menjadi wali kelas aktif, sehingga tidak ada laporan pelanggaran yang dapat ditampilkan.
-        </div>
     <?php endif; ?>
 
     <div class="table-card shadow-sm mb-4">

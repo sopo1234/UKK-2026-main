@@ -497,7 +497,7 @@ CREATE TABLE `t_pelanggaran_siswa` (
   `kelas_id` int(11) DEFAULT NULL,
   `nama_kelas` varchar(100) NOT NULL,
   `pelanggaran_id` int(11) DEFAULT NULL,
-  `nama_pelanggaran` int(11) NOT NULL,
+  `nama_pelanggaran` varchar(150) NOT NULL,
   `pelanggaran_kategori_id` int(11) DEFAULT NULL,
   `guru_id` int(11) DEFAULT NULL,
   `nama_guru` varchar(150) NOT NULL,
@@ -529,7 +529,7 @@ CREATE TABLE `t_pelanggaran_siswa` (
 
 LOCK TABLES `t_pelanggaran_siswa` WRITE;
 /*!40000 ALTER TABLE `t_pelanggaran_siswa` DISABLE KEYS */;
-INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_siswa`, `kelas_id`, `nama_kelas`, `pelanggaran_id`, `nama_pelanggaran`, `pelanggaran_kategori_id`, `guru_id`, `nama_guru`, `tanggal`, `keterangan`, `poin`, `tindakan`, `status`, `created_at`, `updated_at`) VALUES (2,NULL,121,'RANGGA RAMADIYANTO NURHAKIM',11,'XII RPL 1',1,0,NULL,NULL,'','2026-11-04','merokok',5,'Diberi teguran & pembinaan','','2026-11-04 06:15:12','2026-11-04 06:15:12');
+INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_siswa`, `kelas_id`, `nama_kelas`, `pelanggaran_id`, `nama_pelanggaran`, `pelanggaran_kategori_id`, `guru_id`, `nama_guru`, `tanggal`, `keterangan`, `poin`, `tindakan`, `status`, `created_at`, `updated_at`) VALUES (2,NULL,121,'RANGGA RAMADIYANTO NURHAKIM',11,'XII RPL 1',1,'Pelanggaran 1',NULL,NULL,'','2026-11-04','merokok',5,'Diberi teguran & pembinaan','','2026-11-04 06:15:12','2026-11-04 06:15:12');
 /*!40000 ALTER TABLE `t_pelanggaran_siswa` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -38,6 +38,17 @@ $menuGuru = [
     'about_me.php' => 'About Me'
 ];
 
+// Menu Laporan hanya untuk guru yang aktif menjadi wali kelas.
+if ($role === 'guru') {
+    require_once __DIR__ . '/../config/koneksi.php';
+    require_once __DIR__ . '/../includes/wali_kelas.php';
+
+    $wali_aktif = cari_wali_kelas($koneksi, (int) ($_SESSION['id_user'] ?? 0));
+    if (!$wali_aktif) {
+        unset($menuGuru['laporan_pelanggaran.php']);
+    }
+}
+
 // Tentukan menu berdasarkan role
 if ($role === 'admin') {
     $menu = $menuAdmin;

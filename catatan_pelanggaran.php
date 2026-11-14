@@ -52,10 +52,12 @@ $pelanggaran = mysqli_query($koneksi, "
 
 // Ambil seluruh catatan dari semua guru (semua user hanya dapat melihat)
 $stmt = mysqli_prepare($koneksi, "
-    SELECT ps.id, ps.tanggal, ps.nama_siswa, ps.nama_kelas, ps.nama_pelanggaran,
+    SELECT ps.id, ps.tanggal, ps.nama_siswa, ps.nama_kelas,
+           COALESCE(NULLIF(p.nama, ''), NULLIF(ps.nama_pelanggaran, '0'), '') AS nama_pelanggaran,
            ps.poin, ps.keterangan, ps.status, ps.nama_guru, s.nis
     FROM t_pelanggaran_siswa ps
     LEFT JOIN t_siswa s ON s.id = ps.siswa_id
+    LEFT JOIN t_pelanggaran p ON p.id = ps.pelanggaran_id
     ORDER BY ps.tanggal DESC, ps.id DESC
 ");
 mysqli_stmt_execute($stmt);
