@@ -84,7 +84,7 @@ $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
 $dari     = trim($_POST['dari'] ?? '');
 $sampai   = trim($_POST['sampai'] ?? '');
 $status   = $_POST['status'] ?? '';
-$oleh     = $_POST['oleh'] ?? 'semua';
+$oleh     = 'saya'; // Laporan wali kelas selalu hanya catatan yang ia buat sendiri.
 
 $tgl_valid = function ($t) {
     $d = DateTime::createFromFormat('Y-m-d', $t);
@@ -98,9 +98,6 @@ if ($sampai !== '' && !$tgl_valid($sampai)) {
 }
 if (!in_array($status, ['tercatat', 'ditindak', 'selesai'], true)) {
     $status = '';
-}
-if ($oleh !== 'saya') {
-    $oleh = 'semua';
 }
 if ($kelas_id > 0 && !in_array($kelas_id, $kelas_wali, true)) {
     // Kelas yang dipilih bukan kelas yang diwali kelasi

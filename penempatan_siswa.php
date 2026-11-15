@@ -265,23 +265,6 @@ if (!$siswa || !$tahun || !$kelas || !$hasil) {
                                 ? 'Aktif'
                                 : 'Tidak Aktif'; ?>
                         </td>
-
-                        <div class="btn-group" role="group">
-                            <td>
-                                <a href="proses_hapus_penempatan.php?id=<?= h($row['id']); ?>"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Apakah Anda yakin ingin menghapus penempatan siswa ini?');">
-                                hapus
-                        <div class="btn=group" role="group">
-                            <td>
-                                <a href="edit_penempatan.php?id=<?= h($row['id']); ?>"
-                                class="btn btn-warning btn-sm">
-                                edit
-                                </a>
-                            </td>
-                        </div>
-                    </td>
-
                 </a>
 
                  </td>

@@ -232,7 +232,9 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
                                             <div class="small text-muted"><?= e($r['keterangan']) ?></div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= (int) $r['poin'] ?></td>
+                                    <td class="<?= (int) $r['poin'] >= 50 ? 'text-danger fw-bold' : '' ?>">
+                                        <?= (int) $r['poin'] ?>
+                                    </td>
                                     <td><?= $r['tindakan'] !== '' ? e($r['tindakan']) : '<span class="text-muted">Belum ada</span>' ?></td>
                                     <td>
                                         <span class="badge text-bg-<?= $warna[$r['status']] ?? 'secondary' ?>">

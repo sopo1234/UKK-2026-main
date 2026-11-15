@@ -12,7 +12,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'guru') {
 $rekap = mysqli_query($koneksi, "
     SELECT s.id, s.nama,
            COALESCE(k.nama, '-') AS nama_kelas,
-           COALESCE(SUM(ps.poin), 0) AS total_poin
+           COALESCE(SUM(ps.poin), 0) AS total_poin,
+           COUNT(DISTINCT ps.id) AS jumlah_catatan
     FROM t_siswa s
     LEFT JOIN t_kelas_siswa ks ON ks.siswa_id = s.id AND ks.status_aktif = 1
     LEFT JOIN t_kelas k ON k.id = ks.kelas_id
@@ -73,6 +74,7 @@ function tindakan_poin(int $poin): string
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
                         <th>Total Poin</th>
+                        <th>Jumlah Catatan</th>
                         <th>Status / Tindakan</th>
                     </tr>
                 </thead>
@@ -87,11 +89,16 @@ function tindakan_poin(int $poin): string
                             <td><?= htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?= htmlspecialchars($row['nama_kelas'], ENT_QUOTES, 'UTF-8'); ?></td>
                             <td>
-                                <?= $total > 0
+                                <?= $total > 50
                                     ? '<span class="badge badge-danger">' . $total . '</span>'
-                                    : 0; ?>
+                                    : ($total > 0
+                                        ? '<span class="badge badge-warning">' . $total . '</span>'
+                                        : 0); ?>
                             </td>
-                            <td><?= tindakan_poin($total); ?></td>
+                            <td><?= (int)$row['jumlah_catatan']; ?>x</td>
+                            <td class="<?= $total > 50 ? 'text-danger font-weight-bold' : ''; ?>">
+                                <?= tindakan_poin($total); ?>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php endif; ?>

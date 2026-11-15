@@ -78,7 +78,7 @@ $kelas_id = (int) ($_GET['kelas_id'] ?? 0);
 $dari     = trim($_GET['dari'] ?? '');
 $sampai   = trim($_GET['sampai'] ?? '');
 $status   = $_GET['status'] ?? '';
-$oleh     = $_GET['oleh'] ?? 'semua';
+$oleh     = 'saya'; // Laporan wali kelas hanya berisi catatan yang ia buat sendiri.
 
 $tgl_valid = function ($t) {
     $d = DateTime::createFromFormat('Y-m-d', $t);
@@ -92,9 +92,6 @@ if ($sampai !== '' && !$tgl_valid($sampai)) {
 }
 if (!in_array($status, ['tercatat', 'ditindak', 'selesai'], true)) {
     $status = '';
-}
-if ($oleh !== 'saya') {
-    $oleh = 'semua';
 }
 if ($kelas_id > 0 && !isset($kelas_wali[$kelas_id])) {
     // Kelas yang dipilih bukan kelas yang diwali kelasi
@@ -262,7 +259,7 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
     <div class="page-header">
         <h1>Laporan Pelanggaran Siswa</h1>
         <a href="dashboard.php">Kembali ke Dashboard</a>
-        <p class="mb-0 text-muted">Laporan atas nama: <b><?= e($nama_guru) ?></b></p>
+        <p class="mb-0 text-muted">Laporan atas nama: <b><?= e($nama_guru) ?></b> &middot; hanya catatan yang Anda buat untuk kelas Anda.</p>
     </div>
 
     <?php if (isset($_SESSION['pesan_sukses'])): ?>
@@ -306,13 +303,6 @@ $warna = ['tercatat' => 'secondary', 'ditindak' => 'warning', 'selesai' => 'succ
                     <option value="selesai" <?= $status === 'selesai' ? 'selected' : '' ?>>Selesai</option>
                 </select>
             </div>
-            <div class="col-md-2">
-                <select name="oleh" class="form-select">
-                    <option value="semua" <?= $oleh === 'semua' ? 'selected' : '' ?>>Semua guru</option>
-                    <option value="saya" <?= $oleh === 'saya' ? 'selected' : '' ?>>Catatan saya saja</option>
-                </select>
-            </div>
-
             <div class="col-md-3">
                 <label class="form-label small mb-0">Dari tanggal</label>
                 <input type="date" name="dari" value="<?= e($dari) ?>" class="form-control">

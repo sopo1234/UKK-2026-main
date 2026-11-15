@@ -8,17 +8,6 @@ function e($nilai)
     return htmlspecialchars((string)($nilai ?? ''), ENT_QUOTES, 'UTF-8');
 }
 
-// Identitas guru yang login (untuk filter "catatan saya")
-$guru_id = null;
-$stmt = mysqli_prepare($koneksi, "SELECT id FROM t_guru WHERE user_id = ? LIMIT 1");
-mysqli_stmt_bind_param($stmt, "i", $_SESSION['id_user']);
-mysqli_stmt_execute($stmt);
-$g = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-mysqli_stmt_close($stmt);
-if ($g) {
-    $guru_id = (int) $g['id'];
-}
-
 // ---------- FILTER ----------
 $cari     = trim($_GET['q'] ?? '');
 $kelas_id = (int) ($_GET['kelas_id'] ?? 0);
@@ -39,19 +28,6 @@ if ($sampai !== '' && !$tgl_valid($sampai)) {
 $where = ["ps.status = 'selesai'"]; // hanya catatan yang selesai ditindak
 $tipe  = '';
 $param = [];
-
-// Riwayat hanya menampilkan data yang dicatat/ditindak oleh guru yang login.
-if ($guru_id !== null) {
-    $where[] = 'ps.guru_id = ?';
-    $tipe   .= 'i';
-    $param[] = $guru_id;
-} elseif (!empty($_SESSION['name'])) {
-    $where[] = 'ps.nama_guru = ?';
-    $tipe   .= 's';
-    $param[] = $_SESSION['name'];
-} else {
-    $where[] = '1=0';
-}
 
 if ($cari !== '') {
     $where[] = '(ps.nama_siswa LIKE ? OR s.nis LIKE ? OR p.nama LIKE ? OR ps.nama_pelanggaran LIKE ?)';
@@ -148,7 +124,7 @@ $query_string = http_build_query([
     <div class="page-header">
         <h1>Riwayat Pelanggaran</h1>
         <a href="dashboard.php">Kembali ke Dashboard</a>
-        <p class="mb-0 text-muted">Arsip catatan pelanggaran yang Anda catat/ditindak dan sudah selesai.</p>
+        <p class="mb-0 text-muted">Arsip semua catatan pelanggaran dari seluruh guru yang sudah selesai ditindak.</p>
     </div>
 
     <div class="table-card shadow-sm">
@@ -204,7 +180,7 @@ $query_string = http_build_query([
                         </thead>
                         <tbody>
                             <?php if ($total === 0): ?>
-                                <tr><td colspan="8" class="text-center text-muted">Belum ada catatan Anda yang selesai ditindak.</td></tr>
+                                <tr><td colspan="8" class="text-center text-muted">Belum ada catatan yang selesai ditindak.</td></tr>
                             <?php endif; ?>
 
                             <?php $no = $offset + 1; while ($r = mysqli_fetch_assoc($hasil)): ?>

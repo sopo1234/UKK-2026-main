@@ -81,3 +81,14 @@ if ($role === 'admin') {
         <a href="logout.php" class="logout">Logout</a>
     </nav>
 </aside>
+
+<script>
+// Setelah logout, tombol Back Chrome bisa memulihkan halaman dari cache/bfcache.
+// Paksa ambil ulang dari server agar cek session mengarahkan ke login.
+window.addEventListener('pageshow', function (event) {
+    var nav = performance.getEntriesByType('navigation')[0];
+    if (event.persisted || (nav && nav.type === 'back_forward')) {
+        window.location.reload();
+    }
+});
+</script>
