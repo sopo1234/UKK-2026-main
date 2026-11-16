@@ -265,15 +265,17 @@ if (!$siswa || !$tahun || !$kelas || !$hasil) {
                                 ? 'Aktif'
                                 : 'Tidak Aktif'; ?>
                         </td>
-                </a>
+                        <td class="text-nowrap">
+                            <a href="edit_penempatan.php?id=<?= (int)$row['id']; ?>"
+                               class="btn btn-warning btn-sm">Edit</a>
 
-                 </td>
-                <td style="display:none;"><?= h($row['id']); ?></td>
-                <td style="display:none;"><?= h($row['siswa_id']); ?></td>
-                <td style="display:none;"><?= h($row['tahun_ajaran_id']); ?></td>
-                <td style="display:none;"><?= h($row['kelas_id']); ?></td>
-
-
+                            <form action="hapus_penempatan.php" method="POST"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Yakin ingin menghapus penempatan ini?')">
+                                <input type="hidden" name="id" value="<?= (int)$row['id']; ?>">
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
                         </tr>
                 <?php endwhile; ?>
                 </tbody>
