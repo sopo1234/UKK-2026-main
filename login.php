@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Halaman login tidak boleh diambil dari cache, agar status login/logout
+// yang ditampilkan selalu sesuai kondisi terbaru di server.
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 include 'config/koneksi.php';
 ?>
 

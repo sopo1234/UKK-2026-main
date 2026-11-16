@@ -83,12 +83,27 @@ if ($role === 'admin') {
 </aside>
 
 <script>
-// Setelah logout, tombol Back Chrome bisa memulihkan halaman dari cache/bfcache.
-// Paksa ambil ulang dari server agar cek session mengarahkan ke login.
-window.addEventListener('pageshow', function (event) {
-    var nav = performance.getEntriesByType('navigation')[0];
-    if (event.persisted || (nav && nav.type === 'back_forward')) {
-        window.location.reload();
-    }
-});
+(function () {
+    // Saat halaman ditinggalkan (misalnya menekan Logout), sembunyikan isinya.
+    // Dengan begitu bfcache Chrome tidak sempat menampilkan dashboard lagi,
+    // walaupun hanya sekilas, ketika tombol Back ditekan setelah logout.
+    window.addEventListener('pagehide', function () {
+        document.documentElement.style.visibility = 'hidden';
+    });
+
+    // Halaman yang dipulihkan dari cache/bfcache harus dicek ulang ke server.
+    // Jika session sudah dihapus (logout), server akan mengarahkan ke login.php.
+    window.addEventListener('pageshow', function (event) {
+        var nav = window.performance && performance.getEntriesByType
+            ? performance.getEntriesByType('navigation')[0]
+            : null;
+
+        if (event.persisted || (nav && nav.type === 'back_forward')) {
+            window.location.reload();
+            return;
+        }
+
+        document.documentElement.style.visibility = '';
+    });
+})();
 </script>
